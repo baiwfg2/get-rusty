@@ -182,7 +182,7 @@ fn t_lifetime() {
     useGenericsAndTraitconstraintAndLifetime(s1.as_str(), s2, 1);
 }
 
-pub fn t10() {
+pub fn t10_trait() {
     let number_list = vec![34, 50, 25, 100, 65];
     let result = largestByNormalWay(&number_list);
     println!("The largest number using normal function is {}", result);

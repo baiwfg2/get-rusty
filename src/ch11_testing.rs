@@ -65,5 +65,5 @@ common arguments:
 cargo test -- --nocapture
 cargo test xxxTest: run only filered cases (测试所在的模块的名称也是测试名称的一部分)
 cargo test -- --ignored
-cargo tet --test integration_test_filename
+cargo test --test integration_test_filename
 */

@@ -31,17 +31,18 @@ fn iterator() {
 
     // 如果没有调collect，则不会消耗迭代器，闭包也就不会被调
     let v2: Vec<_> = v1.iter().map(|x| x+ 1).collect();
-    if (v2 != vec![2, 3, 4]) {
+    if v2 != vec![2, 3, 4] {
         panic!("oops");
     }
 }
 
-pub fn t13() {
+pub fn t13_closure() {
     let example_closure = |x| x;
     // before calling(auto-referring type), there's be error complaining cannot identify x type
     let n = example_closure(5);
 
     let x = vec![1, 2, 3];
+    // move 强制闭包获取值的所有权
     let equal_to_x = move |z: Vec<i32>| z == x;
     // println!("cannot use x here: {:?}", x);
     iterator();
@@ -92,7 +93,7 @@ impl Iterator for Counter {
     type Item = u32;
     fn next(&mut self) -> Option<Self::Item> {
         self.cnt += 1;
-        if (self.cnt < 6) {
+        if self.cnt < 6 {
             Some(self.cnt)
         } else {
             None
@@ -123,6 +124,7 @@ mod tests {
 
     #[test]
     fn test_createIteratorForStruct() {
+        // 必须设置为可变，因为next 改变了迭代器内部用来记录序列位置的状态
         let mut counter = Counter::new();
         assert_eq!(counter.next(), Some(1));
         assert_eq!(counter.next(), Some(2));

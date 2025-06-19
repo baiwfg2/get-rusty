@@ -9,5 +9,6 @@ fn main() {
 
 /*
 cargo build
-cargo run -p adder
+cargo run -p adder : 指定package to run
+cargo test -p add-one
 */
