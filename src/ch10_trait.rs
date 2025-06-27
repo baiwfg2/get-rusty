@@ -119,6 +119,7 @@ fn returns_summarizable() -> impl Summary {
 /*
 If not annotated with lifetime tag, error will be: expected named lifetime parameter
 Because compiler's borrow checker cannot figure out which &str will be returned
+如果不标注，则编译器在执行默认的生命周期标注规则后，仍无法判定所有引用的生命周期时，就报错
 */
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() {
@@ -128,6 +129,8 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     }
 }
 
+// 这个标注意味着 ImportantExcerptWithLifetimeTag 实例的存活时间
+//   不能超过存储在part字段中的引用的存活时间
 struct ImportantExcerptWithLifetimeTag<'a> {
     // annoatate every ref when there're refs in struct
     part: &'a str,
@@ -139,9 +142,9 @@ impl<'a> ImportantExcerptWithLifetimeTag<'a> {
         3
     }
 
-    // Rule 1: apply annotate to self('a) and ann('b)
-    // Rule 3: appy self's lifetime to returnValue
-    // so that every refs can be annotated without human annotation
+    // Apply Rule 1: apply annotate to self('a) and ann('b)
+    // Apply Rule 3: appy self's lifetime to returnValue
+    // so in this case every refs can be annotated without human annotation
     fn announce_and_return_part(&self, ann: &str) -> &str {
         println!("Attention please:{}", ann);
         self.part
