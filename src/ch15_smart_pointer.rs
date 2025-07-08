@@ -1,6 +1,8 @@
 use std::ops::Deref;
 //use std::ops::Drop;
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
+use std::cell::{Ref, RefCell};
+use std::vec;
 
 /*
 引用是只借用数据的指针， 但多数智能指针本身就拥有它们指向的数据
@@ -11,14 +13,35 @@ use std::rc::Rc;
 //     Nil,
 // }
 
-enum List {
-    Cons(i32, Box<List>),
+enum BoxList {
+    Cons(i32, Box<BoxList>),
     Nil,
 }
 
 enum RcList {
     Cons(i32, Rc<RcList>),
     Nil,
+}
+
+enum RefCellList {
+    Cons(Rc<RefCell<i32>>, Rc<RefCellList>),
+    Nil,
+}
+
+#[derive(Debug)]
+enum CycledList {
+    Cons(i32, RefCell<Rc<CycledList>>),
+    Nil,
+}
+
+// 取回第二个元素
+impl CycledList {
+    fn tail(&self) -> Option<&RefCell<Rc<CycledList>>> {
+        match self {
+            CycledList::Cons(_, s) => Some(s),
+            CycledList::Nil => None,
+        }
+    }
 }
 
 struct MyBox<T>(T); // what grammar is it ?
@@ -52,6 +75,135 @@ impl Drop for CustomSmartPointer {
     }
 }
 
+fn _Rc_refcnt_test() {
+    println!("------------ [Rc_refcnt_test]");
+    let a3 = Rc::new(RcList::Cons(5,
+        Rc::new(RcList::Cons(10,
+            Rc::new(RcList::Nil)))));
+    println!("counter after after creating a3, {}", Rc::strong_count(&a3));
+    let b3 = RcList::Cons(3, Rc::clone(&a3));
+    println!("counter after after creating b3, {}", Rc::strong_count(&a3));
+    {
+        let c = RcList::Cons(4, Rc::clone(&a3));
+        println!("counter after after creating c, {}", Rc::strong_count(&a3));
+        // Rc<T>'s Drop will decrement refcnt
+    }
+    println!("counter after after c out of scope, {}", Rc::strong_count(&a3));
+}
+
+fn _RefCell_test() {
+    println!("------------ [RefCell_test]");
+    let x = 5;
+    //let y = &mut x; // cannot borrow immutable local variable x as mutable
+
+    use RefCellList::{Cons, Nil};
+    let value = Rc::new(RefCell::new(5));
+}
+
+// Page488
+fn CycledRef_test() {
+    println!("--------------- [CycledRef_test]");
+    use CycledList::{Cons, Nil};
+    let a = Rc::new(Cons(5, RefCell::new(Rc::new(Nil))));
+    println!("a inital rc count = {}", Rc::strong_count(&a));
+    println!("a next item = {:?}", a.tail());
+
+    let b = Rc::new(Cons(10, RefCell::new(Rc::clone(&a))));
+    println!("a rc count after b creation = {}", Rc::strong_count(&a));
+    println!("b initial rc count = {}", Rc::strong_count(&b));
+    println!("b next item = {:?}", b.tail());
+
+    // 修改a的值，让a指向b
+    if let Some(link) = a.tail() {
+        *link.borrow_mut() = Rc::clone(&b);
+    }
+    println!("b rc count after changing a = {}", Rc::strong_count(&b)); // 2
+    println!("a rc count after changing a = {}", Rc::strong_count(&a)); // 2
+
+    // Error: thread 'main' has overflowed its stack
+    //  Debug trait will recursively print
+    // println!("a next item = {:?}", a.tail());
+}
+// Page 479
+pub trait Messenger {
+    fn send(&self, msg: &str);
+}
+pub struct LimitTracker<'a, T: 'a + Messenger> {
+    messenger: &'a T,
+    value: usize,
+    max: usize,
+}
+
+impl<'a, T> LimitTracker<'a, T>
+    where T: Messenger {
+    pub fn new(messenger: &T, max: usize) -> LimitTracker<T> {
+        LimitTracker { messenger, value: 0, max: max }
+    }
+
+    pub fn set_value(&mut self, value: usize) {
+        self.value = value;
+        let percentage_of_max = self.value as f64 / self.max as f64;
+        if percentage_of_max >= 1.0 {
+            self.messenger.send("Error, you are over quota");
+        } else if percentage_of_max >= 0.9 {
+            self.messenger.send("Error, you are over 90%");
+        } else if percentage_of_max >= 0.75 {
+            self.messenger.send("Error, you are over 75%");
+        }
+    }
+}
+
+#[derive(Debug)]
+struct Node {
+    value: i32,
+    parent: RefCell<Weak<Node>>,
+    children: RefCell<Vec<Rc<Node>>>,
+}
+
+fn weak_count_test() {
+    println!(">>> weak_count_test");
+    let leaf = Rc::new(Node {
+        value: 1,
+        parent: RefCell::new(Weak::new()),
+        children: RefCell::new(vec![]),
+    });
+    println!("leaf strong:{}, weak:{}", Rc::strong_count(&leaf), Rc::weak_count(&leaf));
+
+    {
+        let branch = Rc::new(Node {
+            value: 2,
+            parent: RefCell::new(Weak::new()),
+            children: RefCell::new(vec![Rc::clone(&leaf)]),
+        });
+        *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+        println!("branch strong:{}, weak:{}", Rc::strong_count(&branch), Rc::weak_count(&branch));
+        println!("leaf strong:{}, weak:{}", Rc::strong_count(&leaf), Rc::weak_count(&leaf));
+    }
+    println!("after branch out of scope, leaf parent:{:?}", leaf.parent.borrow().upgrade());
+    println!("leaf strong:{}, weak:{}", Rc::strong_count(&leaf), Rc::weak_count(&leaf));
+}
+
+// 避免循环引用
+fn WeakPointer_test() {
+    println!("--------------- [WeakPointer_test]");
+    let leaf = Rc::new(Node {
+        value: 3,
+        parent: RefCell::new(Weak::new()),
+        children: RefCell::new(vec![]),
+    });
+    println!("leaf parent={:?}", leaf.parent.borrow()); // leaf parent=(Weak)
+    println!("leaf parent={:?}", leaf.parent.borrow().upgrade());
+
+    let branch = Rc::new(Node {
+        value: 5,
+        parent: RefCell::new(Weak::new()),
+        children: RefCell::new(vec![Rc::clone(&leaf)]),
+    });
+    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+    println!("after making leaf.parent point to branch, leaf parent:{:?}", leaf.parent.borrow().upgrade());
+    weak_count_test();
+}
+
 pub fn t15_smart_pointer() {
     let x = 5;
     let y = &x;
@@ -74,7 +226,7 @@ pub fn t15_smart_pointer() {
     drop(c); // 调std::mem::drop 可提前释放
     let c = CustomSmartPointer { dat: String::from("abc2") };
 
-    use List::{Cons, Nil};
+    use BoxList::{Cons, Nil};
 
     let a = Cons(5,
         Box::new(Cons(10,
@@ -92,17 +244,55 @@ pub fn t15_smart_pointer() {
     let d = RcList::Cons(3, Rc::clone(&a2));
     let e = RcList::Cons(4, Rc::clone(&a2));
 
-    println!("print Rc<T> refcnt");
-    let a3 = Rc::new(RcList::Cons(5,
-        Rc::new(RcList::Cons(10,
-            Rc::new(RcList::Nil)))));
-    println!("counter after after creating a3, {}", Rc::strong_count(&a3));
-    let b3 = RcList::Cons(3, Rc::clone(&a3));
-    println!("counter after after creating b3, {}", Rc::strong_count(&a3));
-    {
-        let c = RcList::Cons(4, Rc::clone(&a3));
-        println!("counter after after creating c, {}", Rc::strong_count(&a3));
-        // Rc<T>'s Drop will decrement refcnt
+    _Rc_refcnt_test();
+
+    _RefCell_test();
+    CycledRef_test();
+
+    WeakPointer_test();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct MockMessenger {
+        // sent_msg: Vec<String>,
+        sent_msg: RefCell<Vec<String>>,
     }
-    println!("counter after after c out of scope, {}", Rc::strong_count(&a3));
+    impl MockMessenger {
+        fn new() -> MockMessenger {
+            // MockMessenger { sent_msg: vec![] }
+            MockMessenger { sent_msg: RefCell::new(vec![]) }
+        }
+    }
+
+    impl Messenger for MockMessenger {
+        fn send(&self, msg: &str) {
+            // `self` is a `&` reference, so the data it refers to cannot be
+            //      borrowed as mutable
+            // 接收了不可变的self引用 ，所以无法修改 MockMessenger的内容来记录消息
+            //self.sent_msg.push(String::from(msg));
+            
+            // self 仍然是不可变引用，与send原型保持一致
+            // 调用了 RefCell的borrow_mut来获取 Vec<String> 的可变引用
+            self.sent_msg.borrow_mut().push(String::from(msg));
+            
+            /* 出现 already borrowed: BorrowMutError
+            let mut one_borrrow = self.sent_msg.borrow_mut();
+            let mut two_borrow = self.sent_msg.borrow_mut();
+            one_borrrow.push(String::from(msg));
+            two_borrow.push(String::from(msg));
+            */
+        }
+    }
+
+    #[test]
+    fn it_sends_an_over_75_percent_warning_message() {
+        let mock_msger = MockMessenger::new();
+        let mut limit_tracker = LimitTracker::new(&mock_msger, 100);
+
+        limit_tracker.set_value(80);
+        assert_eq!(mock_msger.sent_msg.borrow().len(), 1);
+    }
 }

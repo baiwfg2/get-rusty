@@ -7,6 +7,8 @@ use crate::ch7_front_of_house::hosting;
 
 mod ch10_trait;
 use crate::ch10_trait::t10_trait;
+mod ch10_lifetime;
+use crate::ch10_lifetime::t10_lifetime;
 
 mod ch11_testing;
 mod ch13_closure;
@@ -14,6 +16,12 @@ use crate::ch13_closure::t13_closure;
 
 mod ch15_smart_pointer;
 use crate::ch15_smart_pointer::t15_smart_pointer;
+
+mod ch16_concurrency;
+use crate::ch16_concurrency::t16_concurrency;
+
+mod ch17_oop;
+use crate::ch17_oop::t17_oop;
 
 fn main() {
     println!("Hello, world!");
@@ -29,9 +37,12 @@ fn main() {
     eat_at_restaurant_within_lib_rs(); // 当定义在lib.rs中使用
     hosting::add_to_waitlist();
 
-    t10_trait();
-    t13_closure();
-    t15_smart_pointer();
+    //t10_trait();
+    //t10_lifetime();
+    //t13_closure();
+    //t15_smart_pointer();
+    //t16_concurrency();
+    t17_oop();
 }
 
 #[derive(Debug)]
