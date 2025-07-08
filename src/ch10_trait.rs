@@ -116,75 +116,6 @@ fn returns_summarizable() -> impl Summary {
     }
 }
 
-/*
-If not annotated with lifetime tag, error will be: expected named lifetime parameter
-Because compiler's borrow checker cannot figure out which &str will be returned
-如果不标注，则编译器在执行默认的生命周期标注规则后，仍无法判定所有引用的生命周期时，就报错
-*/
-fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
-    if x.len() > y.len() {
-        x
-    } else {
-        y
-    }
-}
-
-// 这个标注意味着 ImportantExcerptWithLifetimeTag 实例的存活时间
-//   不能超过存储在part字段中的引用的存活时间
-struct ImportantExcerptWithLifetimeTag<'a> {
-    // annoatate every ref when there're refs in struct
-    part: &'a str,
-}
-
-impl<'a> ImportantExcerptWithLifetimeTag<'a> {
-    // no ref parameter, no ref return
-    fn level(&self) -> i32 {
-        3
-    }
-
-    // Apply Rule 1: apply annotate to self('a) and ann('b)
-    // Apply Rule 3: appy self's lifetime to returnValue
-    // so in this case every refs can be annotated without human annotation
-    fn announce_and_return_part(&self, ann: &str) -> &str {
-        println!("Attention please:{}", ann);
-        self.part
-    }
-}
-
-use std::fmt::Display;
-// use generics, trait constrait, lifetime simutaneously
-fn useGenericsAndTraitconstraintAndLifetime<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str 
-    where T: Display {
-    println!("[useGenericsAndTraitconstraintAndLifetime] announcement: {}", ann);
-    if x.len() > y.len() {
-        x
-    } else {
-        y
-    }
-}
-
-fn t_lifetime() {
-    let s1 = String::from("abcd");
-    let s2 = "xyz";
-    let res = longest(s1.as_str(), s2);
-    println!("[LIFETIME exercise] the longest string is {}", res);
-
-    ///////// lifetime anti-example
-    let s3 = String::from("abcd");
-    let res2;
-    {
-        let s4 = String::from("xyz");
-        res2 = longest(s3.as_str(), s4.as_str());
-    }
-    // error: borrowed value does not live long enough if calling this. No error if not called
-    // println!("the longest string is {}", res2);
-
-    let novel = String::from("call me cshi. some years aog....");
-    let first_sentence = novel.split('.').next().expect("ERROR !!");
-    let i = ImportantExcerptWithLifetimeTag { part: first_sentence };
-    useGenericsAndTraitconstraintAndLifetime(s1.as_str(), s2, 1);
-}
-
 pub fn t10_trait() {
     let number_list = vec![34, 50, 25, 100, 65];
     let result = largestByNormalWay(&number_list);
@@ -206,6 +137,4 @@ pub fn t10_trait() {
     println!("1 new tweet: {}", tweet.summarize());
     // 因为整形实现了 ToString trait
     println!("blanket impl: {}", 3.to_string());
-
-    t_lifetime();
 }
