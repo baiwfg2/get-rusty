@@ -10,3 +10,5 @@ description = "cshi's learning code snippet for rust"
 opt-level = 2
 
 [dependencies]
+hello_macro = { path = "./hello_macro" }
+hello_macro_derive = { path = "./hello_macro_derive" }

@@ -23,6 +23,12 @@ use crate::ch16_concurrency::t16_concurrency;
 mod ch17_oop;
 use crate::ch17_oop::t17_oop;
 
+mod ch18_pattern_match;
+use crate::ch18_pattern_match::t18_pattern_match;
+
+mod ch19_advanced_feature;
+use crate::ch19_advanced_feature::t19_advanced_feature;
+
 fn main() {
     println!("Hello, world!");
     value_in_cents(Coin::Quarter(UsState::Alaska));
@@ -42,7 +48,9 @@ fn main() {
     //t13_closure();
     //t15_smart_pointer();
     //t16_concurrency();
-    t17_oop();
+    //t17_oop();
+    //t18_pattern_match();
+    t19_advanced_feature();
 }
 
 #[derive(Debug)]

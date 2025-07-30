@@ -49,6 +49,7 @@ pub fn t13_closure() {
 }
 
 #[derive(PartialEq, Debug)] // assert_eq needs
+
 struct Shoe {
     size: u32,
     style: String,
