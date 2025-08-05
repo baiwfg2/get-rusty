@@ -6,9 +6,26 @@ license = "MIT OR Apache-2.0"
 authors = ["Lewis Chan <me@bupt.cn>"]
 description = "cshi's learning code snippet for rust"
 
+# 调试版配置
+[profile.dev]
+opt-level = 0        # 优化级别：0(无优化) 到 3(最高优化)
+debug = true         # 包含调试信息
+debug-assertions = true  # 启用调试断言
+overflow-checks = true   # 启用整数溢出检查
+lto = false         # 链接时优化
+panic = 'unwind'    # panic 处理方式
+
+# 发布版配置
 [profile.release]
-opt-level = 2
+opt-level = 3       # 最高优化
+debug = false       # 不包含调试信息
+debug-assertions = false
+overflow-checks = false
+lto = true         # 启用链接时优化
+panic = 'abort'    # panic 时直接终止
+codegen-units = 1  # 代码生成单元数
 
 [dependencies]
 hello_macro = { path = "./hello_macro" }
 hello_macro_derive = { path = "./hello_macro_derive" }
+ch20_web = { path = "./ch20_web" }
