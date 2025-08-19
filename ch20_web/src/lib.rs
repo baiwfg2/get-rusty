@@ -66,7 +66,7 @@ fn handle_conn3(mut stream: TcpStream) {
         ("HTTP/1.1 404 NOT FOUND\r\n\r\n", "ch20_web/404.html")
     };
 
-    println!("Current working directory: {:?}", std::env::current_dir().unwrap());
+    // println!("Current working directory: {:?}", std::env::current_dir().unwrap());
     let contents = fs::read_to_string(filename).unwrap();
     let response = format!("{}{}", status_line, contents);
     stream.write(response.as_bytes()).unwrap();
@@ -88,10 +88,13 @@ fn t3_threadpool() {
     
     for stream in listener.incoming() {
         let stream = stream.unwrap();
-        
+        pool.execute(|| {
+            handle_conn3(stream);
+        });
     }
 }
 
 pub fn t20_webserver_main() {
-    t2_read_request();
+    //t2_read_request();
+    t3_threadpool();
 }
