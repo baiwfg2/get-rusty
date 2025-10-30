@@ -85,8 +85,10 @@ fn t2_read_request() {
 fn t3_threadpool() {
     let listener = TcpListener::bind("0.0.0.0:7878").unwrap();
     let pool = ThreadPool::new(4);
-    
-    for stream in listener.incoming() {
+
+    // for stream in listener.incoming() {
+    // 用于演示pool退出作用域，调用 Drop 的情况
+    for stream in listener.incoming().take(2) {
         let stream = stream.unwrap();
         pool.execute(|| {
             handle_conn3(stream);
