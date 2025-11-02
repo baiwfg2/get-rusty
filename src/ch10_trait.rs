@@ -32,7 +32,7 @@ impl<T> Point<T> {
     }
 }
 
-// similar to template specilization
+// similar to template specilization (P273)
 impl Point<f32> {
     fn distance_from_origin(&self) -> f32 {
         (self.x.powi(2) + self.y.powi(2)).sqrt()
@@ -85,25 +85,31 @@ impl Summary for Tweet {
     }
 }
 
-// this is a short form of Trait as parameters, suitable for simple occasion
-// if `impl` is omitted, then error reminds: 
-//      alternatively, use a trait object to accept any type that implements `Summary`(That is impl Summary), 
-//      accessing its methods at runtime using dynamic dispatch
-pub fn notify(item: impl Summary) {
-    println!("Breaking news! {}", item.summarize());
+mod use_trait_as_parameter {
+    use std::fmt::{Debug, Display};
+    use super::Summary;
+
+    // this is a short form of Trait as parameters, suitable for simple occasion
+    // if `impl` is omitted, then error reminds:
+    //      alternatively, use a trait object to accept any type that implements `Summary`(That is impl Summary),
+    //      accessing its methods at runtime using dynamic dispatch
+    pub fn notify(item: impl Summary) {
+        println!("Breaking news! {}", item.summarize());
+    }
+
+    // This form is called a `trait bound` (Eng ver P243), equivalent to above form (P283)
+    fn notifyWithTraitConstraint<T: Summary>(item: T) {
+        println!("Breaking news! {}", item.summarize());
+    }
+
+    // 如果要求两个参数是同一种类型，只能这样写，不能写成 impl Summary
+    fn notifyMakeParameterUseSameType<T: Summary>(item1: T, item2: T) {}
+
+
+    fn someFunctionUsingWhereClause<T,U>(t: T, u: U)
+        where T: Display + Clone,
+            U: Clone + Debug {}
 }
-
-// the above is equivalent to this form
-fn notifyWithTraitConstraint<T: Summary>(item: T) {
-    println!("Breaking news! {}", item.summarize());
-}
-
-fn notifyMakeParameterUseSameType<T: Summary>(item1: T, item2: T) {}
-
-
-// fn someFunctionUsingWhereClause<T,U>(t: T, u: U) -> i32 
-//     where T: Display + Clont,
-//           U: Clone + Debug {}
 
 ///////// return Trait type
 // cannot return differnt type
@@ -113,6 +119,42 @@ fn returns_summarizable() -> impl Summary {
         content: String::from("of course, as you probably already know, people"),
         reply: false,
         retweet: false,
+    }
+
+    /* NO support this
+    if switch {
+        NewsArticle
+    } else {
+        Tweet
+    }
+     */
+}
+
+mod implement_trait_function_condionally {
+    use std::fmt::Display;
+
+    // 泛型结构体
+    struct Pair<T> {
+        x: T,
+        y: T,
+    }
+
+    // 为所有T实现Pair<T>的方法
+    impl<T> Pair<T> {
+        fn new(x: T, y: T) -> Self {
+            Self { x, y }
+        }
+    }
+
+    // 仅为实现了Display和PartialOrd trait的T实现cmp_display方法
+    impl<T: Display + PartialOrd> Pair<T> {
+        fn cmp_display(&self) {
+            if self.x >= self.y {
+                println!("The largest member is x = {}", self.x);
+            } else {
+                println!("The largest member is y = {}", self.y);
+            }
+        }
     }
 }
 

@@ -1,5 +1,14 @@
-// 不能使用 crate::来引用(报函数 not in the root)，因为main.rs和lib.rs是不同的crate，虽然都是根节点
+/* 不能使用 crate::来引用(报函数 not in the root)，
+因为main.rs和lib.rs是不同的crate，虽然都是根节点, crate::
+只能引用当前 crate 内的内容
+
+rust:: = 外部 crate 的名字
+rust 是你的 package 名字（来自 Cargo.toml 的 name = "rust"）
+*/
 use rust::eat_at_restaurant_within_lib_rs; // 当放在lib.rs中使用
+
+mod ch1_4;
+use crate::ch1_4::t_ch1_ch4;
 
 mod ch7_front_of_house;
 // rust会找与此模块同名的文件中加载内容
@@ -43,6 +52,7 @@ fn main() {
     eat_at_restaurant_within_lib_rs(); // 当定义在lib.rs中使用
     hosting::add_to_waitlist();
 
+    //t_ch1_ch4();
     //t10_trait();
     //t10_lifetime();
     //t13_closure();

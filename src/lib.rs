@@ -1,7 +1,8 @@
 //! # My LIB CRATE
-//! 
+//!
 //! contains part of code in trpl
 
+// front_of_house, back_of_house are all contents in chapter 7 (can also refer to English version 2025.2.pdf)
 // lib.rs is added to build automatically
 mod front_of_house {
     pub mod hosting {
@@ -12,11 +13,12 @@ mod front_of_house {
 }
 
 // use crate::front_of_house::hosting; // absolute path
-    // pub use crate::front_of_house::hosting 这叫re-importing，可以使得外部代码也可直接使用。但我觉得这不好，外部代码想用时，应该直接使用crate::front_of_house::hosting
+    // 这叫re-importing，可以使得外部代码也可直接使用。为何外部代码想用时，不直接使用crate::front_of_house::hosting ？
+    // pub use crate::front_of_house::hosting
 use self::front_of_house::hosting; // relative path, 不能和crate::front_of_house::hosting同时使用，否则报 reimported error
     // 不使用 self:: 似乎也可以
 use std::fmt::Result;
-use std::io::Result as IoResult; // 重命名避免冲突
+use std::io::Result as IoResult; // 重命名避免冲突 (Eng ver P171)
 use std::{cmp::Ordering, io};
 // use std::io::{self, Write};
 // use std::collections::*;
@@ -25,6 +27,7 @@ pub fn eat_at_restaurant_within_lib_rs() {
     println!("[ACCESSING PUBLIC MODULE within lib.rs]");
     crate::front_of_house::hosting::add_to_waitlist();
     front_of_house::hosting::add_to_waitlist();
+    // 这种比直接 写成 add_to_waitlist(); 更清晰，因为不容易和本作用域内的函数冲突 (Eng ver P170)
     hosting::add_to_waitlist(); // 使用use关键字后，可以直接使用
 
     let mut meal = back_of_house::Breakfast::new("Rye");
@@ -54,7 +57,7 @@ mod back_of_house {
 
     pub struct Breakfast {
         pub toast: String,
-        seasonal_fruit: String, 
+        seasonal_fruit: String,
     }
 
     impl Breakfast {
@@ -66,7 +69,7 @@ mod back_of_house {
         }
     }
 
-    // 枚举的pub会使所有成员都变成pub
+    // 枚举的pub会使所有成员都变成pub (Eng ver P167)
     pub enum Appetizer {
         Soup,
         Salad,
@@ -74,7 +77,7 @@ mod back_of_house {
 }
 
 /// 将传入的两参数相加
-/// 
+///
 /// # Examples
 /// ```
 /// use rust::add_two;

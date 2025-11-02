@@ -23,6 +23,14 @@ enum RcList {
     Nil,
 }
 
+// RefCell<T> 代表了其持有数据的唯一所有权，且rust只会在运行时检查borrow 规则
+// 和Rc<T> 类似，只能用于单线程场景
+// P477 有关于如何选择 Box, Rc, or RefCell
+
+// Rc 允许多个所有者持有同一份数据，但只提供不可变访问；若在 Rc里放RefCell,则可
+//  拥有多个所有者且能够进行修改的值了
+
+#[derive(Debug)]
 enum RefCellList {
     Cons(Rc<RefCell<i32>>, Rc<RefCellList>),
     Nil,
@@ -98,6 +106,17 @@ fn _RefCell_test() {
 
     use RefCellList::{Cons, Nil};
     let value = Rc::new(RefCell::new(5));
+    let a = Rc::new(Cons(Rc::clone(&value), Rc::new(Nil)));
+    // 为了确保b,c 能够同时指向a ，a 需封装到 Rc中
+    let b = Cons(Rc::new(RefCell::new(6)), Rc::clone(&a));
+    let c = Cons(Rc::new(RefCell::new(10)), Rc::clone(&a));
+
+    *value.borrow_mut() += 10;
+    println!("a after:{:?}", a);
+    println!("b after:{:?}", b);
+    println!("c after:{:?}", c);
+    // P486 通过使用RefCell,List保持了表面上的不可变状态，并能够在必要时借RefCell提供的方法 来修改其
+    //   内部的数据
 }
 
 // Page488

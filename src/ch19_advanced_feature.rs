@@ -37,7 +37,7 @@ fn t_use_split_at_mut_from_std() {
 // fn split_at_mut_of_mine(slice: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
 //     let len = slice.len();
 //     assert!(mid <= len, "mid must be less than or equal to slice length");
-//     // 有两次mutable borrow，无法通过编译
+//     // error:  cannot borrow `*slice` as mutable more than once at a time
 //     (&mut slice[..mid], &mut slice[mid..])
 // }
 
