@@ -6,6 +6,10 @@ license = "MIT OR Apache-2.0"
 authors = ["Lewis Chan <me@bupt.cn>"]
 description = "cshi's learning code snippet for rust"
 
+[lib]
+# error: `proc-macro` crate types currently cannot export any items other than functions tagged with `#[proc_macro]`, `#[proc_macro_derive]`, or `#[proc_macro_attribute]`
+#proc-macro = true
+
 # 调试版配置
 [profile.dev]
 opt-level = 0        # 优化级别：0(无优化) 到 3(最高优化)
@@ -26,6 +30,8 @@ panic = 'abort'    # panic 时直接终止
 codegen-units = 1  # 代码生成单元数
 
 [dependencies]
+# If you’re publishing your versions of hello_macro and hello_macro_derive to crates.io,
+# they would be regular dependencies; if not, you can specify them as path dependencies as follows:
 hello_macro = { path = "./hello_macro" }
 hello_macro_derive = { path = "./hello_macro_derive" }
 ch20_web = { path = "./ch20_web" }

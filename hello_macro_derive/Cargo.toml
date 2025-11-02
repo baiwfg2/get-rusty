@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [lib]
+# if not used, report:  use of unresolved module or unlinked crate `proc_macro
 proc-macro = true
 
 [dependencies]

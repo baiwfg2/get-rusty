@@ -93,7 +93,9 @@ mod use_trait_as_parameter {
     // if `impl` is omitted, then error reminds:
     //      alternatively, use a trait object to accept any type that implements `Summary`(That is impl Summary),
     //      accessing its methods at runtime using dynamic dispatch
-    pub fn notify(item: impl Summary) {
+    // pub fn notify(item: &dyn Summary) {
+    pub fn notify(item: &impl Summary) {
+    //pub fn notify(item: impl Summary) {
         println!("Breaking news! {}", item.summarize());
     }
 
