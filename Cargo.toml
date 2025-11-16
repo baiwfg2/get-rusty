@@ -29,9 +29,21 @@ lto = true         # 启用链接时优化
 panic = 'abort'    # panic 时直接终止
 codegen-units = 1  # 代码生成单元数
 
+# https://doc.rust-lang.org/cargo/reference/workspaces.html#the-dependencies-table
 [dependencies]
 # If you’re publishing your versions of hello_macro and hello_macro_derive to crates.io,
 # they would be regular dependencies; if not, you can specify them as path dependencies as follows:
+
+# https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#specifying-path-dependencies
 hello_macro = { path = "./hello_macro" }
 hello_macro_derive = { path = "./hello_macro_derive" }
 ch20_web = { path = "./ch20_web" }
+arrayvec = "0.7.6"
+uuid = "1.18.1"
+dashmap = "6.1.0"
+sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio-rustls", "macros", "chrono", "bigdecimal"] }
+bigdecimal = { version = "0.4.9", features = ["serde"] }
+serde = { version = "1.0.228", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }
+tokio = { version = "1.0", features = ["full"] }
+log = "0.4"
