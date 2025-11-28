@@ -55,9 +55,12 @@ fn t_use_unsafe_to_implement_split_at_mut(slice: &mut [i32], mid: usize) ->
     }
 }
 
-// extern 用于两种场合：一是extern crate， 二是用于FFI
+// extern 用于两种场合：一是extern crate， 二是用于
+// extern block must be unsafe (Eng ver P591)
+// extern "C" 指定了调用的外部函数的 ABI是C语言的ABI
 unsafe extern "C" {
     fn abs(intput: i32) -> i32;
+    // safe fn abs(intput: i32) -> i32; // 程序员可指定safe，这样调用时就不用unsafe 块了 （Eng ver P592)
 }
 
 fn t_call_c() {
@@ -404,6 +407,8 @@ fn t_advanced_function_closure() {
 macro_rules! myvec {
     // Within $() is $x:expr , which matches any Rust expression and gives the expression the name $x .
     // The * specifies that the pattern matches zero or more of whatever precedes the *
+    // 上面这句话写得有歧义，'precedes the *' 的不就是逗号吗？那是表示对 , 的重复吗？
+    // 然而实际不是，'*' 修饰的不是单独的逗号，而是整个重复组 '($x:expr),'
     ( $( $x:expr ),* ) => {
         {
             let mut temp_vec = Vec::new();

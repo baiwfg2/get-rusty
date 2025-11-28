@@ -67,6 +67,14 @@ Send - 标记 trait（不需要 dyn）：
 */
 type Job = Box<dyn FnOnce() + Send + 'static>;
 
+/*  这样写会报多种描述的错误：
+impl Trait` in type aliases is unstable (因为 impl Trait 代表一个具体的但未命名的类型 而类型别名需要明确的类型)
+unconstrained opaque type
+`Job` must be used in combination with a concrete type within the same crate
+
+type Job = Box<impl FnOnce() + Send + 'static>;
+*/
+
 impl ThreadPool {
     /// Creates a new ThreadPool with the specified number of threads.
     /// # Panics

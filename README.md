@@ -1,5 +1,10 @@
 
+# run
+
+`RUSTFLAGS=-Awarnings cargo run --target-dir /data2/rust-target/ -- https://www.rust-lang.org`
+
 using `RUSTFLAGS=-Awarnings cargo run` to suppress warnings
+
 
 # gdb debugging
 

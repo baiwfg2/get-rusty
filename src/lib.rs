@@ -89,3 +89,7 @@ pub fn add_two(a: i32, b: i32) -> i32 {
 }
 
 // use `cargo doc --open` can see the documentation effect
+
+// 不用 pub：模块只能在当前 crate 内部使用，外部 crate 无法访问
+// 对测试而言：通常没有影响，cargo test 都能正常运行
+mod ch19_macros_extra;

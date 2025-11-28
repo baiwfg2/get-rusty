@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use std::ops::Not;
 
+////////////// 来自deepseek 设计
+
 // 错误类型定义
 #[derive(Debug)]
 pub enum DepositError {
