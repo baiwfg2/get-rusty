@@ -3,6 +3,7 @@ use std::ops::Deref;
 use std::rc::{Rc, Weak};
 use std::cell::{Ref, RefCell};
 use std::vec;
+use std::collections::HashMap;
 
 /*
 引用是只借用数据的指针， 但多数智能指针本身就拥有它们指向的数据
@@ -52,7 +53,7 @@ impl CycledList {
     }
 }
 
-struct MyBox<T>(T); // what grammar is it ?
+struct MyBox<T>(T); // tuple struct，可以只指定类型，不指定字段名。访问时用 self.0 , self.1
 
 impl<T> MyBox<T> {
     fn new(x: T) -> MyBox<T> {
@@ -117,6 +118,24 @@ fn _RefCell_test() {
     println!("c after:{:?}", c);
     // P486 通过使用RefCell,List保持了表面上的不可变状态，并能够在必要时借RefCell提供的方法 来修改其
     //   内部的数据
+
+    // https://doc.rust-lang.org/std/cell/
+    let shared_map: Rc<RefCell<_>> = Rc::new(RefCell::new(HashMap::new()));
+    // Create a new block to limit the scope of the dynamic borrow
+    {
+        let mut map = shared_map.borrow_mut();
+        map.insert("africa", 1);
+        map.insert("kyoto", 2);
+        map.insert("piccadilly", 3);
+        map.insert("marbles", 4);
+    } // 可变借用在这里结束
+
+    // Note that if we had not let the previous borrow of the cache fall out
+    // of scope then the subsequent borrow would cause a dynamic thread panic (BorrowError).
+    // This is the major hazard of using `RefCell`.
+    // 获得了在不可变引用下修改数据的能力，但需要承担运行时借用检查失败的风险
+    let total: i32 = shared_map.borrow().values().sum();
+    println!("hash value sum: {total}");
 }
 
 // Page488
@@ -292,11 +311,11 @@ mod tests {
             //      borrowed as mutable
             // 接收了不可变的self引用 ，所以无法修改 MockMessenger的内容来记录消息
             //self.sent_msg.push(String::from(msg));
-            
+
             // self 仍然是不可变引用，与send原型保持一致
             // 调用了 RefCell的borrow_mut来获取 Vec<String> 的可变引用
             self.sent_msg.borrow_mut().push(String::from(msg));
-            
+
             /* 出现 already borrowed: BorrowMutError
             let mut one_borrrow = self.sent_msg.borrow_mut();
             let mut two_borrow = self.sent_msg.borrow_mut();

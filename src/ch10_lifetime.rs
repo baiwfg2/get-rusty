@@ -2,6 +2,8 @@
 If not annotated with lifetime tag, error will be: expected named lifetime parameter
 Because compiler's borrow checker cannot figure out which &str will be returned
 如果不标注，则编译器在执行默认的生命周期标注规则后，仍无法判定所有引用的生命周期时，就报错
+
+都用'a表示：两个切片的存活时间不短于'a ，返回值的存活时间也不短于'a
 */
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() {
@@ -17,12 +19,13 @@ fn longest_with_one_ref<'a>(x: &'a str, y: &str) -> &'a str {
 }
 
 // Page330:这个标注意味着 ImportantExcerptWithLifetimeTag 实例的存活时间
-//   不能超过存储在part字段中的引用的存活时间
+//   不能超过存储在part字段中的引用的存活时间 (P300)
 struct ImportantExcerptWithLifetimeTag<'a> {
-    // annoatate every ref when there're refs in struct
+    // annoatate `every ref` when there're refs in struct
     part: &'a str,
 }
 
+////////// 方法定义中的生命周期标注 (P304)
 impl<'a> ImportantExcerptWithLifetimeTag<'a> {
     // no ref parameter, no ref return
     fn level(&self) -> i32 {
@@ -44,7 +47,7 @@ impl<'a> ImportantExcerptWithLifetimeTag<'a> {
 
 use std::fmt::Display;
 // use generics, trait constrait, lifetime simutaneously
-fn useGenericsAndTraitconstraintAndLifetime<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str 
+fn useGenericsAndTraitconstraintAndLifetime<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str
     where T: Display {
     println!("[useGenericsAndTraitconstraintAndLifetime] announcement: {}", ann);
     if x.len() > y.len() {
@@ -60,7 +63,7 @@ pub fn t10_lifetime() {
     let res = longest(s1.as_str(), s2);
     println!("[LIFETIME exercise] the longest string is {}", res);
 
-    ///////// lifetime anti-example
+    ///////// lifetime anti-example (P297)
     let s3 = String::from("abcd");
     let res2;
     {
@@ -69,6 +72,7 @@ pub fn t10_lifetime() {
     }
     // error: borrowed value does not live long enough if calling this. No error if not called
     // println!("the longest string is {}", res2);
+    // 返回的引用 的生命周期得是 传入的引用的生命周期中最短的那个，而现在res2却比s4活得更久
 
     let novel = String::from("call me cshi. some years aog....");
     let first_sentence = novel.split('.').next().expect("ERROR !!");

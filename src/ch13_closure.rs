@@ -25,15 +25,43 @@ fn iterator() {
     let v1 = vec![1, 2, 3];
     let v1_iter = v1.iter(); // 返回一个不可变引用的迭代器
     for val in v1_iter { // 这里没要求v1_iter可变，是因为循环取得了 v1_iter的所有权并在内部使得它可变了 ??
-        println!("got: {}", val);
+        println!("iter got: {}", val);
     }
-    // let total: i32 = v1_iter.sum(); //  报：value used here after move
+    // 前面 v1_iter 已经moved了
+    //let total: i32 = v1_iter.sum(); //  报：value used here after move (P407)
 
     // 如果没有调collect，则不会消耗迭代器，闭包也就不会被调
     let v2: Vec<_> = v1.iter().map(|x| x+ 1).collect();
     if v2 != vec![2, 3, 4] {
         panic!("oops");
     }
+
+    // 2. into_iter() - 获取所有权的迭代器 ； 返回 T 类型的元素，消耗原集合，转移所有权； 适用于数据转换和消费
+    let v3 = vec![1, 2, 3];
+    for val in v3.into_iter() {
+        println!("into_iter got: {}", val); // val 类型是 i32，获取了所有权
+    }
+    // println!("{:?}", v3); // 错误：v3 已被移动
+
+    // into_iter() 用于转换和消费数据
+    let v4 = vec![String::from("hello"), String::from("world")];
+    let v5: Vec<String> = v4.into_iter()
+        .map(|s| s.to_uppercase()) // 可以直接修改 s，因为拥有所有权
+        .collect();
+    assert_eq!(v5, vec![String::from("HELLO"), String::from("WORLD")]);
+    // println!("{:?}", v4); // 错误：v4 已被移动
+
+    // 3. iter_mut() - 返回可变引用的迭代器
+    let mut v6 = vec![1, 2, 3];
+    for val in v6.iter_mut() {
+        *val *= 2; // val 类型是 &mut i32，可以修改原值
+    }
+    assert_eq!(v6, vec![2, 4, 6]);
+
+    // iter_mut() 用于就地修改集合元素
+    let mut v7 = vec![String::from("hello"), String::from("world")];
+    v7.iter_mut().for_each(|s| s.push_str("!"));
+    println!("iterator:: after iter_mut modification: {:?}", v7); // ["hello!", "world!"]
 }
 
 pub fn t13_closure() {
@@ -41,9 +69,21 @@ pub fn t13_closure() {
     // before calling(auto-referring type), there's be error complaining cannot identify x type
     let n = example_closure(5);
 
+    let x = 4;
+    //let equal_to_x = |z| z == x; // type must be known at this point
+    // 不可变地借用了x，并实现了Fn trait(所有闭包都自动实现FnOnce)
+    let equal_to_x2 = |z: i32| z == x;
+    println!("after reading by closure, x is still usable: {}", x);
+
+    let mut y = 4;
+    // 如果不设置闭包为mut，则报：// cannot borrow `equal_to_y` as mutable, as it is not declared as mutable
+    // 理解为 y是被闭包借用并修改了状态,相当于 self.xxx 发生了改变，self 自己也必须是mut
+    let mut equal_to_y = |z: i32| -> i32 {y += 1; y};
+    println!("after modified by closure, y is usable: {}", equal_to_y(0));
+
     let x = vec![1, 2, 3];
     // move 强制闭包获取值的所有权
-    let equal_to_x = move |z: Vec<i32>| z == x;
+    let equal_to_x_withMove = move |z: Vec<i32>| z == x;
     // println!("cannot use x here: {:?}", x);
     iterator();
 }
@@ -56,9 +96,9 @@ struct Shoe {
 }
 
 /// collect shoes that match some condition
-/// 
+///
 /// # examples
-/// 
+///
 /// ```
 /// let shoes = vec![
 /// Shoe { size: 10, style: String::from("sneaker")},
@@ -80,6 +120,7 @@ fn shoes_in_my_size(shoes: Vec<Shoe>, shoeSize: u32) -> Vec<Shoe> {
         .collect()
 }
 
+///////////////////// 创建自定义的迭代器(P410)
 struct Counter {
     cnt: u32,
 }
@@ -102,7 +143,7 @@ impl Iterator for Counter {
     }
 }
 
-#[cfg(test)] 
+#[cfg(test)]
 mod tests {
     use super::*;
 
