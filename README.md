@@ -1,21 +1,15 @@
 
-# run
+## Get Rusty
+
+Let's get rusty ! In this repo there'll be different, practical projects written with Rust and show the possiblities of what Rust can do.
+
+## available run command
 
 `RUSTFLAGS=-Awarnings cargo run --target-dir /data2/rust-target/ -- https://www.rust-lang.org`
 
-using `RUSTFLAGS=-Awarnings cargo run` to suppress warnings
+- `RUSTFLAGS=-Awarnings cargo run` to suppress warnings
 
 
-# gdb debugging
+## debugging
 
-正常 gdb 调试即可
-
-# miri check undefined behavior at runtime
-
-install:
-
-`rustup +nightly component add miri`
-
-run:
-
-`cargo +nightly miri run` or `cargo +nightly miri test`
+Both UI vscode-gdb debugging and rust-lldb commandline debugging are good.

@@ -5,7 +5,7 @@
 rust:: = 外部 crate 的名字
 rust 是你的 package 名字（来自 Cargo.toml 的 name = "rust"）
 */
-use rust::eat_at_restaurant_within_lib_rs; // 当放在lib.rs中使用
+use get_rusty::eat_at_restaurant_within_lib_rs; // 当放在lib.rs中使用
 
 mod ch1_4;
 use crate::ch1_4::t_ch1_ch4;
@@ -31,6 +31,9 @@ use crate::ch16_concurrency::t16_concurrency;
 
 mod ch17_oop;
 use crate::ch17_oop::t17_oop;
+
+mod ch17_async;
+use crate::ch17_async::t17_async;
 
 mod ch18_pattern_match;
 use crate::ch18_pattern_match::t18_pattern_match;
@@ -100,16 +103,17 @@ fn main() {
     println!("{:?}", six);
     println!("{:?}", none);
 
-    eat_at_restaurant_within_lib_rs(); // 当定义在lib.rs中使用
-    hosting::add_to_waitlist();
+    //eat_at_restaurant_within_lib_rs(); // 当定义在lib.rs中使用
+    //hosting::add_to_waitlist();
 
     //t_ch1_ch4();
     //t10_trait();
     //t10_lifetime();
     //t13_closure();
     //t15_smart_pointer();
-    t16_concurrency();
+    //t16_concurrency();
     //t17_oop();
+    t17_async();
     //t18_pattern_match();
     //t19_advanced_feature();
     //ch20_web::t20_webserver_main();
