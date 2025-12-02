@@ -1,6 +1,6 @@
 mod common;
 
-use rust::add_two;
+use get_rusty::add_two;
 
 #[test]
 fn dummy_test() {

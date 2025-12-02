@@ -76,6 +76,51 @@ mod back_of_house {
     }
 }
 
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    let mut res = Vec::new();
+    for l in contents.lines() {
+        if l.contains(query) {
+            res.push(l);
+        }
+    }
+    res
+}
+
+pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    let mut res = Vec::new();
+    for l in contents.lines() {
+        if l.to_lowercase().contains(&query.to_lowercase()) {
+            res.push(l);
+        }
+    }
+    res
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn case_sensitive() {
+        let query = "duct";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+Duct tape.";
+        assert_eq!(vec!["safe, fast, productive."], search(query, contents));
+    }
+
+    #[test]
+    fn case_insensitive() {
+        let query = "rUsT";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Trust me.";
+        assert_eq!(vec!["Rust:", "Trust me."], search_case_insensitive(query, contents));
+    }
+}
+
 /// 将传入的两参数相加
 ///
 /// # Examples

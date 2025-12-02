@@ -20,6 +20,9 @@ mod ch10_lifetime;
 use crate::ch10_lifetime::t10_lifetime;
 
 mod ch11_testing;
+mod ch12_io_tools;
+use ch12_io_tools::t12_main;
+
 mod ch13_closure;
 use crate::ch13_closure::t13_closure;
 
@@ -42,6 +45,8 @@ mod ch19_advanced_feature;
 use crate::ch19_advanced_feature::t19_advanced_feature;
 
 mod external;
+use external::tokio_ex::t_tokio;
+use external::pin_ex::t_pin;
 
 use arrayvec::ArrayVec;
 
@@ -109,17 +114,20 @@ fn main() {
     //t_ch1_ch4();
     //t10_trait();
     //t10_lifetime();
+    t12_main();
     //t13_closure();
     //t15_smart_pointer();
     //t16_concurrency();
     //t17_oop();
-    t17_async();
+    //t17_async();
     //t18_pattern_match();
     //t19_advanced_feature();
     //ch20_web::t20_webserver_main();
 
     //t_arrayvec();
     //t_cow_str();
+    //t_tokio();
+    //t_pin();
 }
 
 #[derive(Debug)]
