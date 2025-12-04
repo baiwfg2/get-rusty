@@ -37,7 +37,7 @@ async fn delay(path: web::Path<(u64, String)>) -> impl Responder {
 }
 
 #[actix_web::main]
-async fn t_delayService() -> std::io::Result<()> {
+pub async fn t_delayService() -> std::io::Result<()> {
     let url = env::args()
         .nth(1)
         .unwrap_or_else(|| String::from("localhost"));
