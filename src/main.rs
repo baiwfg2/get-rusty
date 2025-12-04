@@ -48,6 +48,10 @@ mod external;
 use external::tokio_ex::t_tokio;
 use external::pin_ex::t_pin;
 
+mod async_programming;
+use async_programming::ch3_syscall;
+use async_programming::ch4_event_queue;
+
 use arrayvec::ArrayVec;
 
 // ArrayVec 是 Rust 中一个基于数组的、具有固定容量的向量类型。它允许将数据内联存储，这意味着数据可以
@@ -114,7 +118,7 @@ fn main() {
     //t_ch1_ch4();
     //t10_trait();
     //t10_lifetime();
-    t12_main();
+    //t12_main();
     //t13_closure();
     //t15_smart_pointer();
     //t16_concurrency();
@@ -128,6 +132,9 @@ fn main() {
     //t_cow_str();
     //t_tokio();
     //t_pin();
+
+    //ch3_syscall::t3_main();
+    ch4_event_queue::t4_main();
 }
 
 #[derive(Debug)]
