@@ -45,7 +45,9 @@ pub fn t4_main() -> Result<()> {
         poll.registry().register(
             &stream,
             i,
-            ffi::EPOLLIN | ffi::EPOLLET
+            // https://github.com/PacktPublishing/Asynchronous-Programming-in-Rust/issues/4
+            ffi::EPOLLIN | ffi::EPOLLET | ffi::EPOLLONESHOT
+            //ffi::EPOLLIN | ffi::EPOLLET
         )?;
         streams.push(stream);
     }
@@ -74,6 +76,14 @@ fn handle_events(events: &[Event], streams: &mut [TcpStream]) -> Result<usize> {
             match streams[idx].read(&mut data) {
                 // 对端关闭了连接（EOF）,永远不会再有数据了
                 Ok(n) if n == 0 => {
+                    /* 在README中提到过这个现象：对同一个stream fd，收到两次EOF
+                    作者在issue中说：So what we get is a false notification of a read event on a stream that we already
+                    read to EOF. I know that this is something that can happen, but I never thought that
+                    you'd get that on such a simple example that only communicates with a server on the
+                    local host. It never happened to me on 3 different machines, and not to the two technical reviewers.
+
+                    第二次spurious wakeup时，可能仍是EPOLLIN，无EPOLLHUP，后者不一定在此问题中出现
+                    */
                     handled_eve += 1;
                     println!("connection closed by peer: {:?}", e);
                     break;
@@ -86,7 +96,14 @@ fn handle_events(events: &[Event], streams: &mut [TcpStream]) -> Result<usize> {
                 // not ready to read in a non-blocking manner. could happen even
                 // if the event was reported as ready
                 // 暂时没数据（但连接还活着）但响应可能还没传完, 不增加 handled_eve，等下次 epoll 再读
-                Err(e) if e.kind() == io::ErrorKind::WouldBlock => break,
+                Err(e) if e.kind() == io::ErrorKind::WouldBlock => {
+                    println!("would block: {:?}", e);
+                    break;
+                }
+                // this was not in the book example, but it's a error condition
+                // you probably want to handle in some way (either by breaking
+                // out of the loop or trying a new read call immediately)
+                Err(e) if e.kind() == io::ErrorKind::Interrupted => break,
                 Err(e) => return Err(e),
             }
         }

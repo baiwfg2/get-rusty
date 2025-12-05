@@ -1,6 +1,7 @@
 pub const EPOLL_CTRL_ADD: i32 = 1;
 pub const EPOLLIN: i32 = 0x1;
 pub const EPOLLET: i32 = 1 << 31;
+pub const EPOLLONESHOT: i32 = 1 << 30;
 
 #[link(name = "c")]
 unsafe extern "C" {
@@ -12,6 +13,7 @@ unsafe extern "C" {
 
 #[derive(Debug)]
 // 保持和原始C 结构体一致的内存布局（https://elixir.bootlin.com/linux/v6.18/source/include/uapi/linux/eventpoll.h#L83）
+// https://github.com/PacktPublishing/Asynchronous-Programming-in-Rust/issues/5
 #[repr(C, packed)]
 pub struct Event {
     pub(crate) events: u32,

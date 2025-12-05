@@ -29,8 +29,9 @@ impl Poll {
         let res = unsafe {
             ffi::epoll_wait(
                 epoll_fd,
-                //events.as_mut_ptr(),
-                events.as_ptr(),
+                // 传 as_ptr 逻辑上不对，可能有UB
+                events.as_mut_ptr(),
+                //events.as_ptr(),
                 max_events,
                 timeout,
             )
