@@ -5,3 +5,6 @@ pub mod ch4_event_queue;
 pub mod delay_service;
 pub mod ch5_fiber;
 pub mod async_prog;
+pub mod ch7_future;
+pub mod ch7_http;
+pub mod ch7_coroutine;
