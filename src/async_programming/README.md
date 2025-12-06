@@ -142,3 +142,33 @@ Looking at your `tcpdump` log:
     *   The server's attempt to send data after receiving a `FIN` can lead to the kernel sending a `RST` (Reset) packet, as seen in the last line of your `tcpdump`: `Flags [R]`. This is the kernel's way of saying, "This conversation is over; I'm not listening anymore."
 
 In short, your client application decided it was "done" and started closing all connections before the server had finished processing all the requests. The TCP protocol tried to handle this gracefully, but the out-of-order closing and sending of data resulted in the confusing log and the final connection being abruptly reset.
+
+# ch5 fibers
+
+```
+top: 110142354820352, bottom: 110142354820400, align_bottom:110142354820400
+Bytes of the `hello` function at 0x642c57e95b90:
+72 131 236 56 72 141 124 36
+mem: 110142354820400, val: 0
+mem: 110142354820399, val: 0
+mem: 110142354820398, val: 0
+mem: 110142354820397, val: 0
+mem: 110142354820396, val: 0
+mem: 110142354820395, val: 0
+mem: 110142354820394, val: 0
+mem: 110142354820393, val: 0
+mem: 110142354820392, val: 0
+mem: 110142354820391, val: 0 -- highest byte of hello address
+mem: 110142354820390, val: 0
+mem: 110142354820389, val: 100
+mem: 110142354820388, val: 44
+mem: 110142354820387, val: 87
+mem: 110142354820386, val: 233
+mem: 110142354820385, val: 91
+mem: 110142354820384, val: 144 (这是 align bottom offset(-16) 的位置，即对应着hello地址的低字节 0x90) ; 在 `"mov rsp, [{0} + 0x00]",` 后，rsp 即指向这里
+mem: 110142354820383, val: 0
+mem: 110142354820382, val: 0
+mem: 110142354820381, val: 0
+mem: 110142354820380, val: 0
+
+```

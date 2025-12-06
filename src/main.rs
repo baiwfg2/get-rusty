@@ -49,8 +49,6 @@ use external::tokio_ex::t_tokio;
 use external::pin_ex::t_pin;
 
 mod async_programming;
-use async_programming::ch3_syscall;
-use async_programming::ch4_event_queue;
 
 use arrayvec::ArrayVec;
 
@@ -133,8 +131,7 @@ fn main() {
     //t_tokio();
     //t_pin();
 
-    //ch3_syscall::t3_main();
-    ch4_event_queue::t4_main();
+    async_programming::async_prog::t_async_main();
 }
 
 #[derive(Debug)]
