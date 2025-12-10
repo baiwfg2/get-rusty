@@ -4,8 +4,6 @@ use std::thread;
 use super::ch7_future::{Future, PollState};
 use super::ch7_http::Http;
 
-use super::delay_service;
-
 // stoppable/resumable task
 struct Coroutine {
     state: State,
@@ -77,11 +75,6 @@ fn async_main() -> impl Future<Output = ()> {
 }
 
 pub fn t_coroutine_main() {
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() > 1 {
-        delay_service::t_delayService().unwrap();
-        return;
-    }
     let mut coro = async_main();
     loop {
         match coro.poll() {
@@ -95,3 +88,35 @@ pub fn t_coroutine_main() {
         thread::sleep(std::time::Duration::from_millis(100));
     }
 }
+/*
+coroutine starting
+first poll - start operation
+schedule other tasks
+schedule other tasks
+schedule other tasks
+schedule other tasks
+schedule other tasks
+schedule other tasks
+schedule other tasks
+HTTP/1.1 200 OK
+content-length: 11
+connection: close
+content-type: text/plain; charset=utf-8
+date: Wed, 10 Dec 2025 07:43:02 GMT
+
+helloworld1
+first poll - start operation
+schedule other tasks
+schedule other tasks
+schedule other tasks
+schedule other tasks
+schedule other tasks
+HTTP/1.1 200 OK
+content-length: 11
+connection: close
+content-type: text/plain; charset=utf-8
+date: Wed, 10 Dec 2025 07:43:02 GMT
+
+helloworld2
+
+*/
