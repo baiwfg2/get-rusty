@@ -12,3 +12,5 @@ pub mod runtime;
 
 pub mod ch8_http;
 pub mod ch8_runtime_corofied;
+
+pub mod ch8_reactor_executor;

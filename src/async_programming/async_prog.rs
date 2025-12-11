@@ -4,6 +4,8 @@ use super::ch5_fiber;
 use super::ch7_coroutine;
 use super::ch8_runtime_corofied;
 
+use super::ch8_reactor_executor::entrypoint;
+
 use super::delay_service;
 
 pub fn t_async_main() {
@@ -16,5 +18,6 @@ pub fn t_async_main() {
     //ch4_event_queue::t4_main();
     //ch5_fiber::ch5_main();
     //ch7_coroutine::t_coroutine_main();
-    ch8_runtime_corofied::t_run_coro_with_mioPoll();
+    //ch8_runtime_corofied::t_run_coro_with_mioPoll();
+    entrypoint::t_run_reactor_executor();
 }
