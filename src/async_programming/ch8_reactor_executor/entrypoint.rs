@@ -59,7 +59,7 @@ impl Future for Coroutine0 {
                     println!("Program starting");
 
                     // ---------------------------------
-                    let fut1 = Box::new( http::Http::get("/600/HelloAsyncAwait"));
+                    let fut1 = Box::new( http::Http::get("/600/hello1"));
                     self.state = State0::Wait1(fut1);
                 }
 
@@ -70,7 +70,7 @@ impl Future for Coroutine0 {
                             println!("{txt}");
 
                             // ---------------------------------
-                            let fut2 = Box::new( http::Http::get("/400/HelloAsyncAwait"));
+                            let fut2 = Box::new( http::Http::get("/400/hello2"));
                             self.state = State0::Wait2(fut2);
                         }
                         PollState::NotReady => break PollState::NotReady,

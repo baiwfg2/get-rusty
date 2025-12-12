@@ -67,6 +67,7 @@ impl Future for Coroutine0 {
                 }
 
                 State0::Wait1(ref mut f1) => {
+                    // 万一mio.poll 返回的事件是 f2 ready,不是f1, 如何更好处理?
                     match f1.poll() {
                         PollState::Ready(txt) => {
                             // ---- Code you actually wrote ----

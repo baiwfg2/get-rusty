@@ -17,6 +17,7 @@ impl Waker {
     pub fn wake(&self) {
         self.ready_queue.lock()
             .map(|mut q| q.push(self.taskId)).unwrap();
+        println!("waker: waking task {}, unpark thread", self.taskId);
         /*
         Every thread is equipped with some basic low-level blocking support, via the
          thread::park function and thread::Thread::unpark method. park blocks the
@@ -42,12 +43,15 @@ struct ExecutorCore {
     // thread, a RefCell will do so since there is no need for synchronization.
     tasks: RefCell<HashMap<usize, Task>>,
     /*
+    本也可以存储 Arc<dyn Future<…>>，但那样会增加示例的复杂性。当前设计的唯一缺点是我们无法直接获
+    得任务的引用，必须在任务集合中查找，这会花费时间。
     An Arc<…> (shared reference)
     to this collection will be given to each Waker that this executor creates. Since the Waker can
     (and will) be sent to a different thread and signal that a specific task is ready by adding the
     task’s ID to ready_queue, we need to wrap it in an Arc<Mutex<…>>.
      */
     ready_queue: Arc<Mutex<Vec<usize>>>,
+    // 作者也表达了这用来标识top-level future
     // Since the executor instance will only be accessible on the same thread it
     // was created, a simple Cell will suffice in giving us the internal mutability we need
     next_id: Cell<usize>,
@@ -58,6 +62,7 @@ pub fn spawn<F>(future: F)
     CURRENT_EXEC.with(|e| {
         let id = e.next_id.get();
         e.tasks.borrow_mut().insert(id, Box::new(future));
+        // 刚刚spawn，不可能ready，仍把task id 放入叫一个ready queue的容器里，显得怪
         e.ready_queue.lock().map(|mut q| q.push(id)).unwrap();
         e.next_id.set(id + 1);
     });
@@ -82,7 +87,7 @@ impl Executor {
         CURRENT_EXEC.with(|q| q.tasks.borrow_mut().remove(&id))
     }
 
-    fn get_waker(&self, id: usize) -> Waker {
+    fn new_waker(&self, id: usize) -> Waker {
         Waker {
             taskId: id,
             thread: thread::current(),
@@ -107,11 +112,20 @@ impl Executor {
             while let Some(id) = self.pop_ready() {
                 let mut fut = match self.get_future(id) {
                     Some(f) => f,
-                    // guard against false wakeups
-                    None => continue,
+                    /* guard against false wakeups
+                    This will, for example, happen on Windows since we get a READABLE
+                    event when the connection closes, but even though we could filter
+                    those events out, mio doesn’t guarantee that false wakeups won’t happen,
+                    so we have to handle that possibility anyway.
+                    */
+                    None => {
+                        println!("Executor: task {id} not found, maybe already completed, skip");
+                        continue;
+                    }
                 };
 
-                let waker = self.get_waker(id);
+                println!("Executor: creating a new waker for task {id}");
+                let waker = self.new_waker(id);
                 match fut.poll(&waker) {
                     PollState::NotReady => { self.insert_task(id, fut); }
                     PollState::Ready(_) => continue, // the current fut will be dropped
@@ -122,11 +136,11 @@ impl Executor {
             let name = thread::current().name().unwrap_or_default().to_string();
 
             if task_count > 0 {
-                println!("{name}: {task_count} tasks remaining, sleep until notified");
+                println!("thread-{name}: {task_count} tasks remaining, sleep until notified");
                 // yield control to OS sheduler
                 thread::park();
             } else {
-                println!("{name}: all tasks completed");
+                println!("thread-{name}: all tasks completed");
                 break;
             }
         }

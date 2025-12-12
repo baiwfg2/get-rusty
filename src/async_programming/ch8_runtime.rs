@@ -4,7 +4,7 @@ use super::ch7_http::Http;
 
 /////////// 我这个组织和书中不一样，用corofy时报错。直接使用书中main.rs后的代码
 
-fn main() {
+fn t_run_coro_with_mioPoll() {
     let future = async_main();
     let mut runtime = Runtime::new();
     runtime.block_on(future);

@@ -20,7 +20,7 @@ pub fn reactor() -> &'static Reactor {
 pub struct Reactor {
     wakers: Wakers,
     registry: Registry,
-    next_id: AtomicUsize,
+    next_id: AtomicUsize, // used to allocate task id
 }
 
 impl Reactor {
@@ -32,7 +32,7 @@ impl Reactor {
         let _ = self
             .wakers
             .lock()
-            // Must always store the most recent waker
+            // 不能使用 *waker , 未实现 Copy trait, cannot move out of `*waker` which is behind a shared reference
             .map(|mut w| w.insert(id, waker.clone()).is_none())
             .unwrap();
     }
@@ -61,6 +61,7 @@ fn event_loop(mut poll: Poll, wakers: Wakers) {
             let Token(id) = e.token();
             let wakers = wakers.lock().unwrap();
 
+            println!("Reactor: event for task {id}, getting waker ...");
             // may be removed already
             if let Some(waker) = wakers.get(&id) {
                 waker.wake();
@@ -73,6 +74,7 @@ pub fn start() {
     let wakers = Arc::new(Mutex::new(HashMap::new()));
     let poll = Poll::new().unwrap();
     let registry = poll.registry().try_clone().unwrap();
+    // for debugging purposes, I wanted to initialize it to a different start value than our Executor
     let next_id = AtomicUsize::new(1);
     let reactor = Reactor {
         wakers: wakers.clone(),

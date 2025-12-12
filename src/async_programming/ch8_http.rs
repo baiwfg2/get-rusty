@@ -75,6 +75,7 @@ impl Future for HttpGetFuture {
                     return PollState::NotReady;
                 }
                 Err(e) if e.kind() == ErrorKind::Interrupted => {
+                    println!("Interrupted - try again");
                     continue;
                 }
                 Err(e) => {

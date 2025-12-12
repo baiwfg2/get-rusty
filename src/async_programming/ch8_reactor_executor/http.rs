@@ -48,15 +48,18 @@ impl HttpGetFuture {
 impl Future for HttpGetFuture {
     type Output = String;
 
-    fn poll(&mut self, walker: &Waker) -> PollState<Self::Output> {
+    fn poll(&mut self, waker: &Waker) -> PollState<Self::Output> {
         if self.stream.is_none() {
-            println!("first poll - start operation");
+            println!("first poll - start operation, register task:{} for readable", self.id);
             // lazy scheme, send the request after poll for the first time
             self.write_request();
 
             // mio require &mut
             runtime::reactor().register(self.stream.as_mut().unwrap(),
             Interest::READABLE, self.id);
+            // https://github.com/PacktPublishing/Asynchronous-Programming-in-Rust/issues/23
+            // 这里谈到一个问题：响应很快到达，但waker 还未注册
+            runtime::reactor().set_waker(waker, self.id);
             ///////// different from ch7
             //runtime::registry().register(self.stream.as_mut().unwrap(),Token(0), Interest::READABLE).unwrap();
             //return PollState::NotReady;
@@ -77,8 +80,15 @@ impl Future for HttpGetFuture {
                     continue;
                 }
                 Err(e) if e.kind() == ErrorKind::WouldBlock => {
-                    println!("WouldBlock - not ready yet"); // 在刚发请求后，立即读，必然走这里
-                    runtime::reactor().set_waker(walker, self.id);
+                    // 在刚发请求后，立即读，必然走这里
+                    /* Must always store the most recent waker
+                    The reason is that the future could have moved to a different executor
+                    in between calls, and we need to wake up the correct one (it won’t be
+                    possible to move futures like those in our example, but let’s
+                    play by the same rules).
+                    */
+                    println!("WouldBlock - not ready yet, set waker for task:{}", self.id);
+                    runtime::reactor().set_waker(waker, self.id);
                     return PollState::NotReady;
                 }
                 Err(e) if e.kind() == ErrorKind::Interrupted => {
