@@ -13,7 +13,24 @@ fn get_req(path: &str) -> String {
 pub struct Http;
 
 impl Http {
-    pub fn get(path: &str) -> impl Future<Output = String> {
+    /*
+error[E0716]: temporary value dropped while borrowed
+   --> src/main.rs:104:53
+    |
+104 |                     let fut1 = Box::new( Http::get(&get_path(0)));
+    |                                                     ^^^^^^^^^^^  - temporary value is freed at the end of this statement
+    |                                                     |
+    |                                                     creates a temporary value which is freed while still in use
+105 |                     self.state = State0::Wait1(fut1);
+    |                                                ---- coercion requires that borrow lasts for `'static`
+    |
+    = note: due to object lifetime defaults, `Box<dyn future::Future<Output = String>>` actually means `Box<(dyn future::Future<Output = String> + 'static)>`
+note: this call may capture more lifetimes than intended, because Rust 2024 has adjusted the `impl Trait` lifetime capture rules
+
+    explicitly state that the returned Future is 'static (meaning it doesn't borrow from the input).
+    原书的edition是2021，所以不会报错。但在2024版中会报上面的错
+*/
+    pub fn get(path: &str) -> impl Future<Output = String> + 'static {
         HttpGetFuture::new(path)
     }
 }
