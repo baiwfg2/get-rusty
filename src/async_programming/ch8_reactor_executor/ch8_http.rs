@@ -1,7 +1,9 @@
-use super::ch7_future::{Future, PollState};
-use super::runtime;
+use crate::async_programming::ch7_future::{Future, PollState};
+use super::native_runtime as runtime;
 use mio::{Interest, Token};
 use std::io::{Read, Write, ErrorKind};
+
+/// 没有使用waker的版本
 
 fn get_req(path: &str) -> String {
     format!("GET {path} HTTP/1.1\r\n\
