@@ -37,13 +37,19 @@ enum State0 {
     Resolved,
 }
 
+#[derive(Default)]
+struct Stack0 {
+    counter: Option<usize>,
+}
+
 struct Coroutine0 {
+    stack: Stack0,
     state: State0,
 }
 
 impl Coroutine0 {
     fn new() -> Self {
-        Self { state: State0::Start }
+        Self { state: State0::Start, stack: Stack0::default() }
     }
 }
 
@@ -55,6 +61,7 @@ impl Future for Coroutine0 {
         loop {
         match self.state {
                 State0::Start => {
+                    self.stack.counter = Some(0);
                     // ---- Code you actually wrote ----
                     println!("Program starting");
 
@@ -66,12 +73,17 @@ impl Future for Coroutine0 {
                 State0::Wait1(ref mut f1) => {
                     match f1.poll(waker) {
                         PollState::Ready(txt) => {
+                            let mut counter = self.stack.counter.take().unwrap();
                             // ---- Code you actually wrote ----
                             println!("{txt}");
+                            counter += 1;
 
                             // ---------------------------------
                             let fut2 = Box::new( http::Http::get("/400/hello2"));
                             self.state = State0::Wait2(fut2);
+
+                            // save stack
+                            self.stack.counter = Some(counter);
                         }
                         PollState::NotReady => break PollState::NotReady,
                     }
@@ -81,7 +93,11 @@ impl Future for Coroutine0 {
                     match f2.poll(waker) {
                         PollState::Ready(txt) => {
                             // ---- Code you actually wrote ----
+                            let mut counter = self.stack.counter.take().unwrap();
+                            counter += 1;
                             println!("{txt}");
+
+                            println!("Total requests: {}", counter);
 
                             // ---------------------------------
                             self.state = State0::Resolved;

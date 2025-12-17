@@ -21,7 +21,7 @@ pub fn t_async_main() {
     //ch5_fiber::ch5_main();
     //ch7_entrypoint::t_coroutine_main();
     //ch8_entrypoint_native_runtime::t_run_coro_with_mioPoll();
-    //entrypoint::t_run_reactor_executor();
+    entrypoint::t_run_reactor_executor();
     //entrypoint_spawn_multiple_futures::Main();
-    entrypoint_multiple_executors::t_run_multiple_threads_of_executors();
+    //entrypoint_multiple_executors::t_run_multiple_threads_of_executors();
 }
