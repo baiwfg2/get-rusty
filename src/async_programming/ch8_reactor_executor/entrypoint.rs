@@ -3,6 +3,8 @@ use super::runtime::{self, Waker};
 
 use super::future::{Future, PollState};
 
+use std::fmt::Write;
+
 pub fn t_run_reactor_executor() {
     let mut executor = runtime::init();
     executor.block_on(async_main());
@@ -40,6 +42,9 @@ enum State0 {
 #[derive(Default)]
 struct Stack0 {
     counter: Option<usize>,
+    buffer: Option<String>,
+    writer: Option<*mut String>,
+    // writer: Option<&mut String>, //  expected named lifetime parameter
 }
 
 struct Coroutine0 {
@@ -62,6 +67,9 @@ impl Future for Coroutine0 {
         match self.state {
                 State0::Start => {
                     self.stack.counter = Some(0);
+                    self.stack.buffer = Some(String::from("\nBUFFER:\n----\n"));
+                    // cast &mut was coerced to a *mut pointer
+                    self.stack.writer = Some(self.stack.buffer.as_mut().unwrap());
                     // ---- Code you actually wrote ----
                     println!("Program starting");
 
@@ -74,8 +82,8 @@ impl Future for Coroutine0 {
                     match f1.poll(waker) {
                         PollState::Ready(txt) => {
                             let mut counter = self.stack.counter.take().unwrap();
-                            // ---- Code you actually wrote ----
-                            println!("{txt}");
+                            let writer = unsafe { &mut *self.stack.writer.take().unwrap() };
+                            writeln!(writer, "{txt}");
                             counter += 1;
 
                             // ---------------------------------
@@ -84,6 +92,7 @@ impl Future for Coroutine0 {
 
                             // save stack
                             self.stack.counter = Some(counter);
+                            self.stack.writer = Some(writer as *mut String);
                         }
                         PollState::NotReady => break PollState::NotReady,
                     }
@@ -92,15 +101,25 @@ impl Future for Coroutine0 {
                 State0::Wait2(ref mut f2) => {
                     match f2.poll(waker) {
                         PollState::Ready(txt) => {
-                            // ---- Code you actually wrote ----
+                            let writer = unsafe { &mut *self.stack.writer.take().unwrap() };
                             let mut counter = self.stack.counter.take().unwrap();
                             counter += 1;
-                            println!("{txt}");
+                            writeln!(writer, "{txt}").unwrap();
 
                             println!("Total requests: {}", counter);
 
+                            let buffer = self.stack.buffer.as_ref().unwrap();
+                            println!("{buffer}");
+
+
                             // ---------------------------------
                             self.state = State0::Resolved;
+                            /*
+                            gets dropped at the end of this scope too. If we didn’t do that, we would hold on to
+                            the memory that’s been allocated to our String until the entire coroutine is dropped
+                            (which could be much later).
+                             */
+                            let _ = self.stack.buffer.take().unwrap();
                             break PollState::Ready(String::new());
                         }
                         PollState::NotReady => break PollState::NotReady,
