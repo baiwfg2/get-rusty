@@ -109,6 +109,13 @@ impl Executor {
 
     pub fn block_on<F>(&mut self, future: F)
         where F: Future<Output = String> + 'static {
+
+        let waker = self.new_waker(usize::MAX);
+        let mut future = future;
+        match future.poll(&waker) {
+            PollState::Ready(_) => return,
+            PollState::NotReady => (),
+        }
         spawn(future);
         loop {
             // 注意是last in first out

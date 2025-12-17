@@ -1,0 +1,521 @@
+==62191== Memcheck, a memory error detector
+==62191== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==62191== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==62191== Command: ./target/debug/get-rusty
+==62191==
+Hello, world!
+State quarter from Alaska!
+Some(6)
+None
+Program starting
+first poll - start operation, register task:1 for readable
+WouldBlock - not ready yet, set waker for task:1
+Spawning new task with id: 0
+Executor: creating a new waker for task 0
+WouldBlock - not ready yet, set waker for task:1
+thread-main: 1 tasks remaining, sleep until notified
+Reactor: event for task 1, getting waker ...
+waker: waking task 0, unpark thread
+Executor: creating a new waker for task 0
+peer closed, reply len: 141
+first poll - start operation, register task:2 for readable
+WouldBlock - not ready yet, set waker for task:2
+thread-main: 1 tasks remaining, sleep until notified
+Reactor: event for task 2, getting waker ...
+waker: waking task 0, unpark thread
+Reactor: event for task 2, getting waker ...
+waker: waking task 0, unpark thread
+Executor: creating a new waker for task 0
+peer closed, reply len: 141
+Total requests: 2
+==62191== Invalid read of size 1
+==62191==    at 0xB2F04C: {closure#0} (memchr.rs:132)
+==62191==    by 0xB2F04C: rposition<u8, core::slice::memchr::memrchr::{closure_env#0}> (macros.rs:384)
+==62191==    by 0xB2F04C: core::slice::memchr::memrchr (memchr.rs:132)
+==62191==    by 0xB11D17: write_all<std::io::stdio::StdoutRaw> (linewritershim.rs:269)
+==62191==    by 0xB11D17: write_all<std::io::stdio::StdoutRaw> (linewriter.rs:209)
+==62191==    by 0xB11D17: <std::io::stdio::StdoutLock as std::io::Write>::write_all (stdio.rs:860)
+==62191==    by 0xB13365: <std::io::default_write_fmt::Adapter<T> as core::fmt::Write>::write_str (mod.rs:628)
+==62191==    by 0xA061B9: <alloc::string::String as core::fmt::Display>::fmt (string.rs:2687)
+==62191==    by 0xA05FA5: <&T as core::fmt::Display>::fmt (mod.rs:2659)
+==62191==    by 0xB2661E: fmt (rt.rs:173)
+==62191==    by 0xB2661E: core::fmt::write (mod.rs:1469)
+==62191==    by 0xB11A2D: default_write_fmt<std::io::stdio::StdoutLock> (mod.rs:639)
+==62191==    by 0xB11A2D: write_fmt<std::io::stdio::StdoutLock> (mod.rs:1954)
+==62191==    by 0xB11A2D: <&std::io::stdio::Stdout as std::io::Write>::write_fmt (stdio.rs:834)
+==62191==    by 0xAEA581: write_fmt (stdio.rs:808)
+==62191==    by 0xAEA581: print_to<std::io::stdio::Stdout> (stdio.rs:1164)
+==62191==    by 0xAEA581: std::io::stdio::_print (stdio.rs:1275)
+==62191==    by 0x4A7EA4: <get_rusty::async_programming::ch8_reactor_executor::entrypoint::Coroutine0 as get_rusty::async_programming::ch8_reactor_executor::future::Future>::poll (entrypoint.rs:112)
+==62191==    by 0x4A01C6: get_rusty::async_programming::ch8_reactor_executor::executor::Executor::block_on (executor.rs:136)
+==62191==    by 0x4A80F1: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:10)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==  Address 0x4b9e80d is 13 bytes inside a block of size 14 free'd
+==62191==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xB18B04: alloc::raw_vec::RawVecInner<A>::finish_grow (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB18BC2: alloc::raw_vec::RawVecInner<A>::grow_amortized (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB17794: alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB176DC: <alloc::vec::Vec<T,A> as alloc::vec::spec_extend::SpecExtend<&T,core::slice::iter::Iter<T>>>::spec_extend (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xADB144: extend_from_slice<u8, alloc::alloc::Global> (mod.rs:3325)
+==62191==    by 0xADB144: alloc::string::String::push_str (string.rs:1112)
+==62191==    by 0xADAFF6: <alloc::string::String as core::fmt::Write>::write_str (string.rs:3320)
+==62191==    by 0x9F01C9: <alloc::string::String as core::fmt::Display>::fmt (string.rs:2687)
+==62191==    by 0xB2661E: fmt (rt.rs:173)
+==62191==    by 0xB2661E: core::fmt::write (mod.rs:1469)
+==62191==    by 0xADB247: <&mut W as core::fmt::Write::write_fmt::SpecWriteFmt>::spec_write_fmt (mod.rs:234)
+==62191==    by 0xADAEBA: core::fmt::Write::write_fmt (mod.rs:239)
+==62191==    by 0x4A78A9: <get_rusty::async_programming::ch8_reactor_executor::entrypoint::Coroutine0 as get_rusty::async_programming::ch8_reactor_executor::future::Future>::poll (entrypoint.rs:86)
+==62191==  Block was alloc'd at
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xB18C7F: alloc::raw_vec::RawVecInner<A>::try_allocate_in (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xADC547: alloc::raw_vec::RawVecInner<A>::with_capacity_in (mod.rs:419)
+==62191==    by 0xADC67A: with_capacity_in<u8, alloc::alloc::Global> (mod.rs:187)
+==62191==    by 0xADC67A: with_capacity_in<u8, alloc::alloc::Global> (mod.rs:929)
+==62191==    by 0xADC67A: <T as alloc::slice::<impl [T]>::to_vec_in::ConvertVec>::to_vec (slice.rs:445)
+==62191==    by 0x4D6BBC: to_vec_in<u8, alloc::alloc::Global> (slice.rs:398)
+==62191==    by 0x4D6BBC: to_vec<u8> (slice.rs:374)
+==62191==    by 0x4D6BBC: to_owned<u8> (slice.rs:838)
+==62191==    by 0x4D6BBC: to_owned (str.rs:211)
+==62191==    by 0x4D6BBC: <alloc::string::String as core::convert::From<&str>>::from (string.rs:3089)
+==62191==    by 0x4A72B4: <get_rusty::async_programming::ch8_reactor_executor::entrypoint::Coroutine0 as get_rusty::async_programming::ch8_reactor_executor::future::Future>::poll (entrypoint.rs:70)
+==62191==    by 0x49FE64: get_rusty::async_programming::ch8_reactor_executor::executor::Executor::block_on (executor.rs:112)
+==62191==    by 0x4A80F1: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:10)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==    by 0x4FBC7A: core::ops::function::FnOnce::call_once (function.rs:250)
+==62191==    by 0x4F167D: std::sys::backtrace::__rust_begin_short_backtrace (backtrace.rs:158)
+==62191==
+==62191== Syscall param write(buf) points to unaddressable byte(s)
+==62191==    at 0x498B5AD: __libc_write (write.c:26)
+==62191==    by 0x498B5AD: write (write.c:24)
+==62191==    by 0xB11E1B: write (unix.rs:346)
+==62191==    by 0xB11E1B: write (unix.rs:51)
+==62191==    by 0xB11E1B: write_all<std::sys::stdio::unix::Stdout> (mod.rs:1837)
+==62191==    by 0xB11E1B: write_all (stdio.rs:159)
+==62191==    by 0xB11E1B: write_all<std::io::stdio::StdoutRaw> (linewritershim.rs:281)
+==62191==    by 0xB11E1B: write_all<std::io::stdio::StdoutRaw> (linewriter.rs:209)
+==62191==    by 0xB11E1B: <std::io::stdio::StdoutLock as std::io::Write>::write_all (stdio.rs:860)
+==62191==    by 0xB13365: <std::io::default_write_fmt::Adapter<T> as core::fmt::Write>::write_str (mod.rs:628)
+==62191==    by 0xA061B9: <alloc::string::String as core::fmt::Display>::fmt (string.rs:2687)
+==62191==    by 0xA05FA5: <&T as core::fmt::Display>::fmt (mod.rs:2659)
+==62191==    by 0xB2661E: fmt (rt.rs:173)
+==62191==    by 0xB2661E: core::fmt::write (mod.rs:1469)
+==62191==    by 0xB11A2D: default_write_fmt<std::io::stdio::StdoutLock> (mod.rs:639)
+==62191==    by 0xB11A2D: write_fmt<std::io::stdio::StdoutLock> (mod.rs:1954)
+==62191==    by 0xB11A2D: <&std::io::stdio::Stdout as std::io::Write>::write_fmt (stdio.rs:834)
+==62191==    by 0xAEA581: write_fmt (stdio.rs:808)
+==62191==    by 0xAEA581: print_to<std::io::stdio::Stdout> (stdio.rs:1164)
+==62191==    by 0xAEA581: std::io::stdio::_print (stdio.rs:1275)
+==62191==    by 0x4A7EA4: <get_rusty::async_programming::ch8_reactor_executor::entrypoint::Coroutine0 as get_rusty::async_programming::ch8_reactor_executor::future::Future>::poll (entrypoint.rs:112)
+==62191==    by 0x4A01C6: get_rusty::async_programming::ch8_reactor_executor::executor::Executor::block_on (executor.rs:136)
+==62191==    by 0x4A80F1: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:10)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==  Address 0x4b9e800 is 0 bytes inside a block of size 14 free'd
+==62191==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xB18B04: alloc::raw_vec::RawVecInner<A>::finish_grow (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB18BC2: alloc::raw_vec::RawVecInner<A>::grow_amortized (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB17794: alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB176DC: <alloc::vec::Vec<T,A> as alloc::vec::spec_extend::SpecExtend<&T,core::slice::iter::Iter<T>>>::spec_extend (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xADB144: extend_from_slice<u8, alloc::alloc::Global> (mod.rs:3325)
+==62191==    by 0xADB144: alloc::string::String::push_str (string.rs:1112)
+==62191==    by 0xADAFF6: <alloc::string::String as core::fmt::Write>::write_str (string.rs:3320)
+==62191==    by 0x9F01C9: <alloc::string::String as core::fmt::Display>::fmt (string.rs:2687)
+==62191==    by 0xB2661E: fmt (rt.rs:173)
+==62191==    by 0xB2661E: core::fmt::write (mod.rs:1469)
+==62191==    by 0xADB247: <&mut W as core::fmt::Write::write_fmt::SpecWriteFmt>::spec_write_fmt (mod.rs:234)
+==62191==    by 0xADAEBA: core::fmt::Write::write_fmt (mod.rs:239)
+==62191==    by 0x4A78A9: <get_rusty::async_programming::ch8_reactor_executor::entrypoint::Coroutine0 as get_rusty::async_programming::ch8_reactor_executor::future::Future>::poll (entrypoint.rs:86)
+==62191==  Block was alloc'd at
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xB18C7F: alloc::raw_vec::RawVecInner<A>::try_allocate_in (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xADC547: alloc::raw_vec::RawVecInner<A>::with_capacity_in (mod.rs:419)
+==62191==    by 0xADC67A: with_capacity_in<u8, alloc::alloc::Global> (mod.rs:187)
+==62191==    by 0xADC67A: with_capacity_in<u8, alloc::alloc::Global> (mod.rs:929)
+==62191==    by 0xADC67A: <T as alloc::slice::<impl [T]>::to_vec_in::ConvertVec>::to_vec (slice.rs:445)
+==62191==    by 0x4D6BBC: to_vec_in<u8, alloc::alloc::Global> (slice.rs:398)
+==62191==    by 0x4D6BBC: to_vec<u8> (slice.rs:374)
+==62191==    by 0x4D6BBC: to_owned<u8> (slice.rs:838)
+==62191==    by 0x4D6BBC: to_owned (str.rs:211)
+==62191==    by 0x4D6BBC: <alloc::string::String as core::convert::From<&str>>::from (string.rs:3089)
+==62191==    by 0x4A72B4: <get_rusty::async_programming::ch8_reactor_executor::entrypoint::Coroutine0 as get_rusty::async_programming::ch8_reactor_executor::future::Future>::poll (entrypoint.rs:70)
+==62191==    by 0x49FE64: get_rusty::async_programming::ch8_reactor_executor::executor::Executor::block_on (executor.rs:112)
+==62191==    by 0x4A80F1: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:10)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==    by 0x4FBC7A: core::ops::function::FnOnce::call_once (function.rs:250)
+==62191==    by 0x4F167D: std::sys::backtrace::__rust_begin_short_backtrace (backtrace.rs:158)
+==62191==
+
+BUFFER:
+----
+
+==62191== Invalid free() / delete / delete[] / realloc()
+==62191==    at 0x484988F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xADBF5A: core::ptr::drop_in_place<alloc::raw_vec::RawVec<u8>> (mod.rs:805)
+==62191==    by 0xADBF33: core::ptr::drop_in_place<alloc::vec::Vec<u8>> (mod.rs:805)
+==62191==    by 0xADBEEA: core::ptr::drop_in_place<alloc::string::String> (mod.rs:805)
+==62191==    by 0x4A7FBD: <get_rusty::async_programming::ch8_reactor_executor::entrypoint::Coroutine0 as get_rusty::async_programming::ch8_reactor_executor::future::Future>::poll (entrypoint.rs:122)
+==62191==    by 0x4A01C6: get_rusty::async_programming::ch8_reactor_executor::executor::Executor::block_on (executor.rs:136)
+==62191==    by 0x4A80F1: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:10)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==    by 0x4FBC7A: core::ops::function::FnOnce::call_once (function.rs:250)
+==62191==    by 0x4F167D: std::sys::backtrace::__rust_begin_short_backtrace (backtrace.rs:158)
+==62191==    by 0x4F1A00: std::rt::lang_start::{{closure}} (rt.rs:206)
+==62191==  Address 0x4b9e800 is 0 bytes inside a block of size 14 free'd
+==62191==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xB18B04: alloc::raw_vec::RawVecInner<A>::finish_grow (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB18BC2: alloc::raw_vec::RawVecInner<A>::grow_amortized (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB17794: alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB176DC: <alloc::vec::Vec<T,A> as alloc::vec::spec_extend::SpecExtend<&T,core::slice::iter::Iter<T>>>::spec_extend (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xADB144: extend_from_slice<u8, alloc::alloc::Global> (mod.rs:3325)
+==62191==    by 0xADB144: alloc::string::String::push_str (string.rs:1112)
+==62191==    by 0xADAFF6: <alloc::string::String as core::fmt::Write>::write_str (string.rs:3320)
+==62191==    by 0x9F01C9: <alloc::string::String as core::fmt::Display>::fmt (string.rs:2687)
+==62191==    by 0xB2661E: fmt (rt.rs:173)
+==62191==    by 0xB2661E: core::fmt::write (mod.rs:1469)
+==62191==    by 0xADB247: <&mut W as core::fmt::Write::write_fmt::SpecWriteFmt>::spec_write_fmt (mod.rs:234)
+==62191==    by 0xADAEBA: core::fmt::Write::write_fmt (mod.rs:239)
+==62191==    by 0x4A78A9: <get_rusty::async_programming::ch8_reactor_executor::entrypoint::Coroutine0 as get_rusty::async_programming::ch8_reactor_executor::future::Future>::poll (entrypoint.rs:86)
+==62191==  Block was alloc'd at
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xB18C7F: alloc::raw_vec::RawVecInner<A>::try_allocate_in (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xADC547: alloc::raw_vec::RawVecInner<A>::with_capacity_in (mod.rs:419)
+==62191==    by 0xADC67A: with_capacity_in<u8, alloc::alloc::Global> (mod.rs:187)
+==62191==    by 0xADC67A: with_capacity_in<u8, alloc::alloc::Global> (mod.rs:929)
+==62191==    by 0xADC67A: <T as alloc::slice::<impl [T]>::to_vec_in::ConvertVec>::to_vec (slice.rs:445)
+==62191==    by 0x4D6BBC: to_vec_in<u8, alloc::alloc::Global> (slice.rs:398)
+==62191==    by 0x4D6BBC: to_vec<u8> (slice.rs:374)
+==62191==    by 0x4D6BBC: to_owned<u8> (slice.rs:838)
+==62191==    by 0x4D6BBC: to_owned (str.rs:211)
+==62191==    by 0x4D6BBC: <alloc::string::String as core::convert::From<&str>>::from (string.rs:3089)
+==62191==    by 0x4A72B4: <get_rusty::async_programming::ch8_reactor_executor::entrypoint::Coroutine0 as get_rusty::async_programming::ch8_reactor_executor::future::Future>::poll (entrypoint.rs:70)
+==62191==    by 0x49FE64: get_rusty::async_programming::ch8_reactor_executor::executor::Executor::block_on (executor.rs:112)
+==62191==    by 0x4A80F1: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:10)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==    by 0x4FBC7A: core::ops::function::FnOnce::call_once (function.rs:250)
+==62191==    by 0x4F167D: std::sys::backtrace::__rust_begin_short_backtrace (backtrace.rs:158)
+==62191==
+Executor: task 0 not found, maybe already completed, skip
+thread-main: all tasks completed
+==62191==
+==62191== HEAP SUMMARY:
+==62191==     in use at exit: 2,802 bytes in 13 blocks
+==62191==   total heap usage: 56 allocs, 44 frees, 28,269 bytes allocated
+==62191==
+==62191== 24 bytes in 1 blocks are still reachable in loss record 1 of 13
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xAA071F: alloc (alloc.rs:95)
+==62191==    by 0xAA071F: alloc::alloc::Global::alloc_impl (alloc.rs:190)
+==62191==    by 0xAA05F4: allocate (alloc.rs:251)
+==62191==    by 0xAA05F4: alloc::alloc::exchange_malloc (alloc.rs:352)
+==62191==    by 0xAA2768: new<alloc::sync::ArcInner<core::sync::atomic::AtomicBool>> (boxed.rs:262)
+==62191==    by 0xAA2768: alloc::sync::Arc<T>::new (sync.rs:420)
+==62191==    by 0xA9CF15: mio::poll::Poll::new::{{closure}} (poll.rs:327)
+==62191==    by 0xA9BA26: core::result::Result<T,E>::map (result.rs:836)
+==62191==    by 0xA9CE87: mio::poll::Poll::new (poll.rs:323)
+==62191==    by 0x50C92C: get_rusty::async_programming::ch8_reactor_executor::reactor::start (reactor.rs:75)
+==62191==    by 0x4B54E5: get_rusty::async_programming::ch8_reactor_executor::runtime::init (runtime.rs:9)
+==62191==    by 0x4A80D8: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:9)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==
+==62191== 32 bytes in 1 blocks are still reachable in loss record 2 of 13
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xAF0E03: alloc (alloc.rs:95)
+==62191==    by 0xAF0E03: alloc_impl (alloc.rs:190)
+==62191==    by 0xAF0E03: allocate (alloc.rs:251)
+==62191==    by 0xAF0E03: exchange_malloc (alloc.rs:352)
+==62191==    by 0xAF0E03: new<std::sys::thread::unix::ThreadData> (boxed.rs:262)
+==62191==    by 0xAF0E03: std::sys::thread::unix::Thread::new (unix.rs:55)
+==62191==    by 0x4B291F: std::thread::Builder::spawn_unchecked_ (mod.rs:601)
+==62191==    by 0x4B1F5E: std::thread::Builder::spawn_unchecked (mod.rs:470)
+==62191==    by 0x4B1F09: spawn<get_rusty::async_programming::ch8_reactor_executor::reactor::start::{closure_env#0}, ()> (mod.rs:402)
+==62191==    by 0x4B1F09: std::thread::spawn (mod.rs:731)
+==62191==    by 0x50CD18: get_rusty::async_programming::ch8_reactor_executor::reactor::start (reactor.rs:86)
+==62191==    by 0x4B54E5: get_rusty::async_programming::ch8_reactor_executor::runtime::init (runtime.rs:9)
+==62191==    by 0x4A80D8: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:9)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==    by 0x4FBC7A: core::ops::function::FnOnce::call_once (function.rs:250)
+==62191==    by 0x4F167D: std::sys::backtrace::__rust_begin_short_backtrace (backtrace.rs:158)
+==62191==
+==62191== 32 bytes in 1 blocks are still reachable in loss record 3 of 13
+==62191==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0x48B6643: __cxa_thread_atexit_impl (cxa_thread_atexit_impl.c:106)
+==62191==    by 0xAF6627: initialize<core::cell::Cell<std::thread::spawnhook::SpawnHooks>> (eager.rs:49)
+==62191==    by 0xAF6627: get<core::cell::Cell<std::thread::spawnhook::SpawnHooks>> (eager.rs:38)
+==62191==    by 0xAF6627: {closure#0} (mod.rs:68)
+==62191==    by 0xAF6627: call_once<std::thread::spawnhook::SPAWN_HOOKS::{constant#0}::{closure_env#0}, (core::option::Option<&mut core::option::Option<core::cell::Cell<std::thread::spawnhook::SpawnHooks>>>)> (function.rs:250)
+==62191==    by 0xAF6627: initialize_with<core::cell::Cell<std::thread::spawnhook::SpawnHooks>, std::thread::local::{impl#5}::set::{closure_env#0}<std::thread::spawnhook::SpawnHooks>, ()> (local.rs:530)
+==62191==    by 0xAF6627: set<std::thread::spawnhook::SpawnHooks> (local.rs:569)
+==62191==    by 0xAF6627: std::thread::spawnhook::ChildSpawnHooks::run (spawnhook.rs:148)
+==62191==    by 0x4B34E1: std::thread::Builder::spawn_unchecked_::{{closure}}::{{closure}}::{{closure}} (mod.rs:561)
+==62191==    by 0x4F16A5: std::sys::backtrace::__rust_begin_short_backtrace (backtrace.rs:158)
+==62191==    by 0x4B3278: std::thread::Builder::spawn_unchecked_::{{closure}}::{{closure}} (mod.rs:561)
+==62191==    by 0x50B56F: <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once (unwind_safe.rs:274)
+==62191==    by 0x520885: std::panicking::catch_unwind::do_call (panicking.rs:590)
+==62191==    by 0x4B350A: __rust_try (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0x4B2F45: catch_unwind<(), core::panic::unwind_safe::AssertUnwindSafe<std::thread::{impl#0}::spawn_unchecked_::{closure#1}::{closure_env#0}<get_rusty::async_programming::ch8_reactor_executor::reactor::start::{closure_env#0}, ()>>> (panicking.rs:553)
+==62191==    by 0x4B2F45: catch_unwind<core::panic::unwind_safe::AssertUnwindSafe<std::thread::{impl#0}::spawn_unchecked_::{closure#1}::{closure_env#0}<get_rusty::async_programming::ch8_reactor_executor::reactor::start::{closure_env#0}, ()>>, ()> (panic.rs:359)
+==62191==    by 0x4B2F45: std::thread::Builder::spawn_unchecked_::{{closure}} (mod.rs:560)
+==62191==    by 0x4FB7DD: core::ops::function::FnOnce::call_once{{vtable.shim}} (function.rs:250)
+==62191==    by 0xAF0CCE: call_once<(), dyn core::ops::function::FnOnce<(), Output=()>, alloc::alloc::Global> (boxed.rs:2005)
+==62191==    by 0xAF0CCE: std::sys::thread::unix::Thread::new::thread_start (unix.rs:126)
+==62191==
+==62191== 48 bytes in 1 blocks are still reachable in loss record 4 of 13
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xAF6003: alloc (alloc.rs:95)
+==62191==    by 0xAF6003: alloc_impl (alloc.rs:190)
+==62191==    by 0xAF6003: allocate (alloc.rs:251)
+==62191==    by 0xAF6003: {closure#0}<std::thread::Inner> (sync.rs:513)
+==62191==    by 0xAF6003: allocate_for_layout<core::mem::maybe_uninit::MaybeUninit<std::thread::Inner>, alloc::sync::{impl#16}::new_uninit::{closure_env#0}<std::thread::Inner>, fn(*mut u8) -> *mut alloc::sync::ArcInner<core::mem::maybe_uninit::MaybeUninit<std::thread::Inner>>> (sync.rs:1975)
+==62191==    by 0xAF6003: new_uninit<std::thread::Inner> (sync.rs:511)
+==62191==    by 0xAF6003: std::thread::Thread::new (mod.rs:1481)
+==62191==    by 0x4B2216: std::thread::Builder::spawn_unchecked_ (mod.rs:505)
+==62191==    by 0x4B1F5E: std::thread::Builder::spawn_unchecked (mod.rs:470)
+==62191==    by 0x4B1F09: spawn<get_rusty::async_programming::ch8_reactor_executor::reactor::start::{closure_env#0}, ()> (mod.rs:402)
+==62191==    by 0x4B1F09: std::thread::spawn (mod.rs:731)
+==62191==    by 0x50CD18: get_rusty::async_programming::ch8_reactor_executor::reactor::start (reactor.rs:86)
+==62191==    by 0x4B54E5: get_rusty::async_programming::ch8_reactor_executor::runtime::init (runtime.rs:9)
+==62191==    by 0x4A80D8: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:9)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==    by 0x4FBC7A: core::ops::function::FnOnce::call_once (function.rs:250)
+==62191==    by 0x4F167D: std::sys::backtrace::__rust_begin_short_backtrace (backtrace.rs:158)
+==62191==
+==62191== 48 bytes in 1 blocks are still reachable in loss record 5 of 13
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0x4F183F: alloc (alloc.rs:95)
+==62191==    by 0x4F183F: alloc::alloc::Global::alloc_impl (alloc.rs:190)
+==62191==    by 0x4F1714: allocate (alloc.rs:251)
+==62191==    by 0x4F1714: alloc::alloc::exchange_malloc (alloc.rs:352)
+==62191==    by 0x4B2416: new<alloc::sync::ArcInner<std::thread::Packet<()>>> (boxed.rs:262)
+==62191==    by 0x4B2416: new<std::thread::Packet<()>> (sync.rs:420)
+==62191==    by 0x4B2416: std::thread::Builder::spawn_unchecked_ (mod.rs:515)
+==62191==    by 0x4B1F5E: std::thread::Builder::spawn_unchecked (mod.rs:470)
+==62191==    by 0x4B1F09: spawn<get_rusty::async_programming::ch8_reactor_executor::reactor::start::{closure_env#0}, ()> (mod.rs:402)
+==62191==    by 0x4B1F09: std::thread::spawn (mod.rs:731)
+==62191==    by 0x50CD18: get_rusty::async_programming::ch8_reactor_executor::reactor::start (reactor.rs:86)
+==62191==    by 0x4B54E5: get_rusty::async_programming::ch8_reactor_executor::runtime::init (runtime.rs:9)
+==62191==    by 0x4A80D8: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:9)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==    by 0x4FBC7A: core::ops::function::FnOnce::call_once (function.rs:250)
+==62191==
+==62191== 48 bytes in 1 blocks are possibly lost in loss record 6 of 13
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xAF6003: alloc (alloc.rs:95)
+==62191==    by 0xAF6003: alloc_impl (alloc.rs:190)
+==62191==    by 0xAF6003: allocate (alloc.rs:251)
+==62191==    by 0xAF6003: {closure#0}<std::thread::Inner> (sync.rs:513)
+==62191==    by 0xAF6003: allocate_for_layout<core::mem::maybe_uninit::MaybeUninit<std::thread::Inner>, alloc::sync::{impl#16}::new_uninit::{closure_env#0}<std::thread::Inner>, fn(*mut u8) -> *mut alloc::sync::ArcInner<core::mem::maybe_uninit::MaybeUninit<std::thread::Inner>>> (sync.rs:1975)
+==62191==    by 0xAF6003: new_uninit<std::thread::Inner> (sync.rs:511)
+==62191==    by 0xAF6003: std::thread::Thread::new (mod.rs:1481)
+==62191==    by 0xAF63FF: std::thread::current::init_current (current.rs:261)
+==62191==    by 0x4A6734: get_rusty::async_programming::ch8_reactor_executor::executor::Executor::new_waker (executor.rs:92)
+==62191==    by 0x49FDCF: get_rusty::async_programming::ch8_reactor_executor::executor::Executor::block_on (executor.rs:110)
+==62191==    by 0x4A80F1: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:10)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==    by 0x4FBC7A: core::ops::function::FnOnce::call_once (function.rs:250)
+==62191==    by 0x4F167D: std::sys::backtrace::__rust_begin_short_backtrace (backtrace.rs:158)
+==62191==    by 0x4F1A00: std::rt::lang_start::{{closure}} (rt.rs:206)
+==62191==    by 0xAEB33F: call_once<(), (dyn core::ops::function::Fn<(), Output=i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe)> (function.rs:287)
+==62191==    by 0xAEB33F: do_call<&(dyn core::ops::function::Fn<(), Output=i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe), i32> (panicking.rs:590)
+==62191==    by 0xAEB33F: catch_unwind<i32, &(dyn core::ops::function::Fn<(), Output=i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe)> (panicking.rs:553)
+==62191==    by 0xAEB33F: catch_unwind<&(dyn core::ops::function::Fn<(), Output=i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe), i32> (panic.rs:359)
+==62191==    by 0xAEB33F: {closure#0} (rt.rs:175)
+==62191==    by 0xAEB33F: do_call<std::rt::lang_start_internal::{closure_env#0}, isize> (panicking.rs:590)
+==62191==    by 0xAEB33F: catch_unwind<isize, std::rt::lang_start_internal::{closure_env#0}> (panicking.rs:553)
+==62191==    by 0xAEB33F: catch_unwind<std::rt::lang_start_internal::{closure_env#0}, isize> (panic.rs:359)
+==62191==    by 0xAEB33F: std::rt::lang_start_internal (rt.rs:171)
+==62191==
+==62191== 72 bytes in 1 blocks are still reachable in loss record 7 of 13
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0x4F183F: alloc (alloc.rs:95)
+==62191==    by 0x4F183F: alloc::alloc::Global::alloc_impl (alloc.rs:190)
+==62191==    by 0x4F1714: allocate (alloc.rs:251)
+==62191==    by 0x4F1714: alloc::alloc::exchange_malloc (alloc.rs:352)
+==62191==    by 0x4EEA97: new<alloc::sync::ArcInner<std::sync::poison::mutex::Mutex<std::collections::hash::map::HashMap<usize, get_rusty::async_programming::ch8_reactor_executor::executor::Waker, std::hash::random::RandomState>>>> (boxed.rs:262)
+==62191==    by 0x4EEA97: alloc::sync::Arc<T>::new (sync.rs:420)
+==62191==    by 0x50C90E: get_rusty::async_programming::ch8_reactor_executor::reactor::start (reactor.rs:74)
+==62191==    by 0x4B54E5: get_rusty::async_programming::ch8_reactor_executor::runtime::init (runtime.rs:9)
+==62191==    by 0x4A80D8: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:9)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==    by 0x4FBC7A: core::ops::function::FnOnce::call_once (function.rs:250)
+==62191==    by 0x4F167D: std::sys::backtrace::__rust_begin_short_backtrace (backtrace.rs:158)
+==62191==    by 0x4F1A00: std::rt::lang_start::{{closure}} (rt.rs:206)
+==62191==
+==62191== 80 bytes in 1 blocks are still reachable in loss record 8 of 13
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0x4F183F: alloc (alloc.rs:95)
+==62191==    by 0x4F183F: alloc::alloc::Global::alloc_impl (alloc.rs:190)
+==62191==    by 0x4F1714: allocate (alloc.rs:251)
+==62191==    by 0x4F1714: alloc::alloc::exchange_malloc (alloc.rs:352)
+==62191==    by 0x4B27A0: new<std::thread::{impl#0}::spawn_unchecked_::{closure_env#1}<get_rusty::async_programming::ch8_reactor_executor::reactor::start::{closure_env#0}, ()>> (boxed.rs:262)
+==62191==    by 0x4B27A0: std::thread::Builder::spawn_unchecked_ (mod.rs:581)
+==62191==    by 0x4B1F5E: std::thread::Builder::spawn_unchecked (mod.rs:470)
+==62191==    by 0x4B1F09: spawn<get_rusty::async_programming::ch8_reactor_executor::reactor::start::{closure_env#0}, ()> (mod.rs:402)
+==62191==    by 0x4B1F09: std::thread::spawn (mod.rs:731)
+==62191==    by 0x50CD18: get_rusty::async_programming::ch8_reactor_executor::reactor::start (reactor.rs:86)
+==62191==    by 0x4B54E5: get_rusty::async_programming::ch8_reactor_executor::runtime::init (runtime.rs:9)
+==62191==    by 0x4A80D8: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:9)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==    by 0x4FBC7A: core::ops::function::FnOnce::call_once (function.rs:250)
+==62191==
+==62191== 148 bytes in 1 blocks are possibly lost in loss record 9 of 13
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0x68B46F: alloc (alloc.rs:95)
+==62191==    by 0x68B46F: alloc::alloc::Global::alloc_impl (alloc.rs:190)
+==62191==    by 0x68B7C8: <alloc::alloc::Global as core::alloc::Allocator>::allocate (alloc.rs:251)
+==62191==    by 0x6C80A7: do_alloc<alloc::alloc::Global> (alloc.rs:19)
+==62191==    by 0x6C80A7: hashbrown::raw::RawTableInner::new_uninitialized (mod.rs:1476)
+==62191==    by 0x6C8410: hashbrown::raw::RawTableInner::fallible_with_capacity (mod.rs:1515)
+==62191==    by 0x4D2227: prepare_resize<alloc::alloc::Global> (mod.rs:2584)
+==62191==    by 0x4D2227: resize_inner<alloc::alloc::Global> (mod.rs:2782)
+==62191==    by 0x4D2227: reserve_rehash_inner<alloc::alloc::Global> (mod.rs:2670)
+==62191==    by 0x4D2227: hashbrown::raw::RawTable<T,A>::reserve_rehash (mod.rs:991)
+==62191==    by 0x4D4BD0: hashbrown::raw::RawTable<T,A>::reserve (mod.rs:940)
+==62191==    by 0x4D3A84: hashbrown::raw::RawTable<T,A>::find_or_find_insert_slot (mod.rs:1146)
+==62191==    by 0x4B40A0: find_or_find_insert_slot<usize, get_rusty::async_programming::ch8_reactor_executor::executor::Waker, std::hash::random::RandomState, alloc::alloc::Global, usize> (map.rs:1812)
+==62191==    by 0x4B40A0: hashbrown::map::HashMap<K,V,S,A>::insert (map.rs:1792)
+==62191==    by 0x45A589: std::collections::hash::map::HashMap<K,V,S>::insert (map.rs:1208)
+==62191==    by 0x4EFAF1: get_rusty::async_programming::ch8_reactor_executor::reactor::Reactor::set_waker::{{closure}} (reactor.rs:36)
+==62191==    by 0x525D69: core::result::Result<T,E>::map (result.rs:836)
+==62191==
+==62191== 304 bytes in 1 blocks are possibly lost in loss record 10 of 13
+==62191==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0x40145AB: calloc (rtld-malloc.h:44)
+==62191==    by 0x40145AB: allocate_dtv (dl-tls.c:370)
+==62191==    by 0x40145AB: _dl_allocate_tls (dl-tls.c:629)
+==62191==    by 0x490C616: allocate_stack (allocatestack.c:429)
+==62191==    by 0x490C616: pthread_create@@GLIBC_2.34 (pthread_create.c:655)
+==62191==    by 0xAF0EEF: std::sys::thread::unix::Thread::new (unix.rs:104)
+==62191==    by 0x4B291F: std::thread::Builder::spawn_unchecked_ (mod.rs:601)
+==62191==    by 0x4B1F5E: std::thread::Builder::spawn_unchecked (mod.rs:470)
+==62191==    by 0x4B1F09: spawn<get_rusty::async_programming::ch8_reactor_executor::reactor::start::{closure_env#0}, ()> (mod.rs:402)
+==62191==    by 0x4B1F09: std::thread::spawn (mod.rs:731)
+==62191==    by 0x50CD18: get_rusty::async_programming::ch8_reactor_executor::reactor::start (reactor.rs:86)
+==62191==    by 0x4B54E5: get_rusty::async_programming::ch8_reactor_executor::runtime::init (runtime.rs:9)
+==62191==    by 0x4A80D8: get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor (entrypoint.rs:9)
+==62191==    by 0x4F3959: get_rusty::async_programming::async_prog::t_async_main (async_prog.rs:24)
+==62191==    by 0x4D65EF: get_rusty::main (main.rs:134)
+==62191==
+==62191== 310 bytes in 1 blocks are definitely lost in loss record 11 of 13
+==62191==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xB18B04: alloc::raw_vec::RawVecInner<A>::finish_grow (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB18BC2: alloc::raw_vec::RawVecInner<A>::grow_amortized (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB17794: alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xB176DC: <alloc::vec::Vec<T,A> as alloc::vec::spec_extend::SpecExtend<&T,core::slice::iter::Iter<T>>>::spec_extend (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xADB144: extend_from_slice<u8, alloc::alloc::Global> (mod.rs:3325)
+==62191==    by 0xADB144: alloc::string::String::push_str (string.rs:1112)
+==62191==    by 0xADAFF6: <alloc::string::String as core::fmt::Write>::write_str (string.rs:3320)
+==62191==    by 0xB26677: core::fmt::write (mod.rs:1494)
+==62191==    by 0xADB247: <&mut W as core::fmt::Write::write_fmt::SpecWriteFmt>::spec_write_fmt (mod.rs:234)
+==62191==    by 0xADAEBA: core::fmt::Write::write_fmt (mod.rs:239)
+==62191==    by 0x4A78A9: <get_rusty::async_programming::ch8_reactor_executor::entrypoint::Coroutine0 as get_rusty::async_programming::ch8_reactor_executor::future::Future>::poll (entrypoint.rs:86)
+==62191==    by 0x4A01C6: get_rusty::async_programming::ch8_reactor_executor::executor::Executor::block_on (executor.rs:136)
+==62191==
+==62191== 456 bytes in 1 blocks are still reachable in loss record 12 of 13
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xAED9C6: alloc (alloc.rs:95)
+==62191==    by 0xAED9C6: alloc_impl (alloc.rs:190)
+==62191==    by 0xAED9C6: allocate (alloc.rs:251)
+==62191==    by 0xAED9C6: try_new_uninit_in<alloc::collections::btree::node::LeafNode<usize, std::sys::pal::unix::stack_overflow::thread_info::ThreadInfo>, alloc::alloc::Global> (boxed.rs:503)
+==62191==    by 0xAED9C6: new_uninit_in<alloc::collections::btree::node::LeafNode<usize, std::sys::pal::unix::stack_overflow::thread_info::ThreadInfo>, alloc::alloc::Global> (boxed.rs:470)
+==62191==    by 0xAED9C6: new<usize, std::sys::pal::unix::stack_overflow::thread_info::ThreadInfo, alloc::alloc::Global> (node.rs:87)
+==62191==    by 0xAED9C6: new_leaf<usize, std::sys::pal::unix::stack_overflow::thread_info::ThreadInfo, alloc::alloc::Global> (node.rs:225)
+==62191==    by 0xAED9C6: insert_entry<usize, std::sys::pal::unix::stack_overflow::thread_info::ThreadInfo, alloc::alloc::Global> (entry.rs:403)
+==62191==    by 0xAED9C6: insert<usize, std::sys::pal::unix::stack_overflow::thread_info::ThreadInfo, alloc::alloc::Global> (entry.rs:377)
+==62191==    by 0xAED9C6: insert<usize, std::sys::pal::unix::stack_overflow::thread_info::ThreadInfo, alloc::alloc::Global> (map.rs:1053)
+==62191==    by 0xAED9C6: std::sys::pal::unix::stack_overflow::thread_info::set_current_info (thread_info.rs:118)
+==62191==    by 0xAEB1EB: init (stack_overflow.rs:172)
+==62191==    by 0xAEB1EB: init (mod.rs:44)
+==62191==    by 0xAEB1EB: init (rt.rs:114)
+==62191==    by 0xAEB1EB: {closure#0} (rt.rs:173)
+==62191==    by 0xAEB1EB: do_call<std::rt::lang_start_internal::{closure_env#0}, isize> (panicking.rs:590)
+==62191==    by 0xAEB1EB: catch_unwind<isize, std::rt::lang_start_internal::{closure_env#0}> (panicking.rs:553)
+==62191==    by 0xAEB1EB: catch_unwind<std::rt::lang_start_internal::{closure_env#0}, isize> (panic.rs:359)
+==62191==    by 0xAEB1EB: std::rt::lang_start_internal (rt.rs:171)
+==62191==    by 0x4F19E6: std::rt::lang_start (rt.rs:205)
+==62191==    by 0x4D667D: main (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==
+==62191== 1,200 bytes in 1 blocks are still reachable in loss record 13 of 13
+==62191==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==62191==    by 0xB18C7F: alloc::raw_vec::RawVecInner<A>::try_allocate_in (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==    by 0xA9E627: alloc::raw_vec::RawVecInner<A>::with_capacity_in (mod.rs:419)
+==62191==    by 0xAA24CD: with_capacity_in<libc::unix::linux_like::epoll_event, alloc::alloc::Global> (mod.rs:187)
+==62191==    by 0xAA24CD: with_capacity_in<libc::unix::linux_like::epoll_event, alloc::alloc::Global> (mod.rs:929)
+==62191==    by 0xAA24CD: alloc::vec::Vec<T>::with_capacity (mod.rs:519)
+==62191==    by 0xAA15BD: mio::event::events::Events::with_capacity (events.rs:94)
+==62191==    by 0x50C44C: get_rusty::async_programming::ch8_reactor_executor::reactor::event_loop (reactor.rs:54)
+==62191==    by 0x4EF9C8: get_rusty::async_programming::ch8_reactor_executor::reactor::start::{{closure}} (reactor.rs:86)
+==62191==    by 0x4F1695: std::sys::backtrace::__rust_begin_short_backtrace (backtrace.rs:158)
+==62191==    by 0x4B32B9: std::thread::Builder::spawn_unchecked_::{{closure}}::{{closure}} (mod.rs:562)
+==62191==    by 0x50B56F: <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once (unwind_safe.rs:274)
+==62191==    by 0x520885: std::panicking::catch_unwind::do_call (panicking.rs:590)
+==62191==    by 0x4B350A: __rust_try (in /data/rust-proj/get-rusty/target/debug/get-rusty)
+==62191==
+==62191== LEAK SUMMARY:
+==62191==    definitely lost: 310 bytes in 1 blocks
+==62191==    indirectly lost: 0 bytes in 0 blocks
+==62191==      possibly lost: 500 bytes in 3 blocks
+==62191==    still reachable: 1,992 bytes in 9 blocks
+==62191==         suppressed: 0 bytes in 0 blocks
+==62191==
+==62191== For lists of detected and suppressed errors, rerun with: -s
+==62191== ERROR SUMMARY: 7 errors from 7 contexts (suppressed: 0 from 0)
+
+
+#############  rust-lldb  #############
+
+Reactor: event for task 2, getting waker ...
+waker: waking task 0, unpark thread
+Executor: creating a new waker for task 0
+peer closed, reply len: 141
+Total requests: 2
+/400/hello2
+free(): double free detected in tcache 2
+Process 65237 stopped
+* thread #1, name = 'get-rusty', stop reason = signal SIGABRT
+    frame #0: 0x00007ffff7c9eb2c libc.so.6`__GI___pthread_kill [inlined] __pthread_kill_implementation(no_tid=0, signo=6, threadid=<unavailable>) at pthread_kill.c:44:76
+(lldb) bt
+* thread #1, name = 'get-rusty', stop reason = signal SIGABRT
+  * frame #0: 0x00007ffff7c9eb2c libc.so.6`__GI___pthread_kill [inlined] __pthread_kill_implementation(no_tid=0, signo=6, threadid=<unavailable>) at pthread_kill.c:44:76
+    frame #1: 0x00007ffff7c9eae8 libc.so.6`__GI___pthread_kill [inlined] __pthread_kill_internal(signo=6, threadid=<unavailable>) at pthread_kill.c:78:10
+    frame #2: 0x00007ffff7c9eae8 libc.so.6`__GI___pthread_kill(threadid=<unavailable>, signo=6) at pthread_kill.c:89:10
+    frame #3: 0x00007ffff7c4527e libc.so.6`__GI_raise(sig=6) at raise.c:26:13
+    frame #4: 0x00007ffff7c288ff libc.so.6`__GI_abort at abort.c:79:7
+    frame #5: 0x00007ffff7c297b6 libc.so.6`__libc_message_impl.cold at libc_fatal.c:134:3
+    frame #6: 0x00007ffff7ca8ff5 libc.so.6`malloc_printerr(str=<unavailable>) at malloc.c:5772:3
+    frame #7: 0x00007ffff7cab55f libc.so.6`_int_free(av=0x00007ffff7e03ac0, p=0x0000555556011110, have_lock=0) at malloc.c:4541:5
+    frame #8: 0x00007ffff7caddae libc.so.6`__GI___libc_free(mem=0x0000555556011120) at malloc.c:3398:7
+    frame #9: 0x0000555555f27f5b get-rusty`core::ptr::drop_in_place$LT$alloc..raw_vec..RawVec$LT$u8$GT$$GT$::h39a0f5d82bffdb4c((null)=0x00007fffffffd368) at mod.rs:805:1
+    frame #10: 0x0000555555f27f34 get-rusty`core::ptr::drop_in_place$LT$alloc..vec..Vec$LT$u8$GT$$GT$::h107eca420c8c9811((null)=0x00007fffffffd368) at mod.rs:805:1
+    frame #11: 0x0000555555f27eeb get-rusty`core::ptr::drop_in_place$LT$alloc..string..String$GT$::hf670ed29451eb8fc((null)=0x00007fffffffd368) at mod.rs:805:1
+    frame #12: 0x00005555558f3fbe get-rusty`_$LT$get_rusty..async_programming..ch8_reactor_executor..entrypoint..Coroutine0$u20$as$u20$get_rusty..async_programming..ch8_reactor_executor..future..Future$GT$::poll::he25e069be6c2e5d3(self=0x00005555560111b0, waker=0x00007fffffffd738) at entrypoint.rs:122:70
+    frame #13: 0x00005555558ec1c7 get-rusty`get_rusty::async_programming::ch8_reactor_executor::executor::Executor::block_on::h6e33bac4aada8ad9(self=0x00007fffffffd8bf, future=Coroutine0 @ 0x00007fffffffd8c0) at executor.rs:136:27
+    frame #14: 0x00005555558f40f2 get-rusty`get_rusty::async_programming::ch8_reactor_executor::entrypoint::t_run_reactor_executor::h77d5ab44f2aabf63 at entrypoint.rs:10:14
+    frame #15: 0x000055555593f95a get-rusty`get_rusty::async_programming::async_prog::t_async_main::h7b7bf3462cb385f4 at async_prog.rs:24:5
+    frame #16: 0x00005555559225f0 get-rusty`get_rusty::main::h65b5431a48bfe805 at main.rs:134:5
+    frame #17: 0x0000555555947c7b get-rusty`core::ops::function::FnOnce::call_once::h30cd93ba18d9dfce((null)=0x00005555559224c0, (null)=<unavailable>) at function.rs:250:5
+    frame #18: 0x000055555593d67e get-rusty`std::sys::backtrace::__rust_begin_short_backtrace::hbeb4dc0a57fa37fd(f=0x00005555559224c0) at backtrace.rs:158:18
+    frame #19: 0x000055555593da01 get-rusty`std::rt::lang_start::_$u7b$$u7b$closure$u7d$$u7d$::hcc01f6579f35f658 at rt.rs:206:18
+    frame #20: 0x0000555555f37340 get-rusty`std::rt::lang_start_internal::h00c7908c7c2f92b8 [inlined] core::ops::function::impls::_$LT$impl$u20$core..ops..function..FnOnce$LT$A$GT$$u20$for$u20$$RF$F$GT$::call_once::hef272b0bbce060cb at function.rs:287:21
+    frame #21: 0x0000555555f3733d get-rusty`std::rt::lang_start_internal::h00c7908c7c2f92b8 [inlined] std::panicking::catch_unwind::do_call::hb8c4cc43eed9a08c at panicking.rs:590:40
+    frame #22: 0x0000555555f3733d get-rusty`std::rt::lang_start_internal::h00c7908c7c2f92b8 [inlined] std::panicking::catch_unwind::h2729a121c7344441 at panicking.rs:553:19
+    frame #23: 0x0000555555f3733d get-rusty`std::rt::lang_start_internal::h00c7908c7c2f92b8 [inlined] std::panic::catch_unwind::h8930b2483deb2063 at panic.rs:359:14
+    frame #24: 0x0000555555f3733d get-rusty`std::rt::lang_start_internal::h00c7908c7c2f92b8 [inlined] std::rt::lang_start_internal::_$u7b$$u7b$closure$u7d$$u7d$::hada379c5dd834c6b at rt.rs:175:24
+    frame #25: 0x0000555555f36e33 get-rusty`std::rt::lang_start_internal::h00c7908c7c2f92b8 [inlined] std::panicking::catch_unwind::do_call::hc3ea95eb90ebfdc8 at panicking.rs:590:40
+    frame #26: 0x0000555555f36e33 get-rusty`std::rt::lang_start_internal::h00c7908c7c2f92b8 [inlined] std::panicking::catch_unwind::h0b97aa6eb277c112 at panicking.rs:553:19
+    frame #27: 0x0000555555f36e33 get-rusty`std::rt::lang_start_internal::h00c7908c7c2f92b8 [inlined] std::panic::catch_unwind::h2db34aa2a1d62ae5 at panic.rs:359:14
+    frame #28: 0x0000555555f36e33 get-rusty`std::rt::lang_start_internal::h00c7908c7c2f92b8 at rt.rs:171:5
+    frame #29: 0x000055555593d9e7 get-rusty`std::rt::lang_start::h3debb7a19aa00382(main=0x00005555559224c0, argc=1, argv=0x00007fffffffddb8, sigpipe='\0') at rt.rs:205:5
+    frame #30: 0x000055555592267e get-rusty`main + 30
+    frame #31: 0x00007ffff7c2a1ca libc.so.6`__libc_start_call_main(main=0x0000555555922660, argc=1, argv=0x00007fffffffddb8) at libc_start_call_main.h:58:16
+    frame #32: 0x00007ffff7c2a28b libc.so.6`__libc_start_main_impl(main=0x0000555555922660, argc=1, argv=0x00007fffffffddb8, init=<unavailable>, fini=<unavailable>, rtld_fini=<unavailable>, stack_end=0x00007fffffffdda8) at libc-start.c:360:3
+    frame #33: 0x000055555588e1b5 get-rusty`_start + 37
