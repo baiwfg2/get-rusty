@@ -5,6 +5,8 @@ use super::ch7_intro_coroutine::ch7_entrypoint;
 use super::ch8_reactor_executor::ch8_entrypoint_native_runtime;
 
 use super::ch8_reactor_executor::entrypoint;
+use super::ch8_reactor_executor::entrypoint_spawn_multiple_futures;
+use super::ch8_reactor_executor::entrypoint_multiple_executors;
 
 use super::delay_service;
 
@@ -17,7 +19,9 @@ pub fn t_async_main() {
     //ch3_syscall::t3_main();
     //ch4_event_queue::t4_main();
     //ch5_fiber::ch5_main();
-    ch7_entrypoint::t_coroutine_main();
+    //ch7_entrypoint::t_coroutine_main();
     //ch8_entrypoint_native_runtime::t_run_coro_with_mioPoll();
     //entrypoint::t_run_reactor_executor();
+    //entrypoint_spawn_multiple_futures::Main();
+    entrypoint_multiple_executors::t_run_multiple_threads_of_executors();
 }

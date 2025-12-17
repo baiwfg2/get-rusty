@@ -8,3 +8,6 @@ pub mod entrypoint;
 pub mod ch8_http;
 pub mod native_runtime;
 pub mod ch8_entrypoint_native_runtime;
+
+pub mod entrypoint_spawn_multiple_futures;
+pub mod entrypoint_multiple_executors;

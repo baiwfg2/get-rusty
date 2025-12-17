@@ -61,6 +61,7 @@ pub fn spawn<F>(future: F)
     where F: Future<Output = String> + 'static {
     CURRENT_EXEC.with(|e| {
         let id = e.next_id.get();
+        println!("Spawning new task with id: {}", id);
         e.tasks.borrow_mut().insert(id, Box::new(future));
         // 刚刚spawn，不可能ready，仍把task id 放入叫一个ready queue的容器里，显得怪
         e.ready_queue.lock().map(|mut q| q.push(id)).unwrap();
@@ -77,6 +78,7 @@ impl Executor {
 
     fn pop_ready(&self) -> Option<usize> {
         // LIFO queue
+        // pop: Removes the last element from a vector and returns it, or None if it is empty.
         CURRENT_EXEC.with(|q| q.ready_queue.lock()
             .map(|mut q| q.pop())
             .unwrap())
@@ -109,6 +111,7 @@ impl Executor {
         where F: Future<Output = String> + 'static {
         spawn(future);
         loop {
+            // 注意是last in first out
             while let Some(id) = self.pop_ready() {
                 let mut fut = match self.get_future(id) {
                     Some(f) => f,
