@@ -10,9 +10,15 @@ use get_rusty::eat_at_restaurant_within_lib_rs; // 当放在lib.rs中使用
 mod ch1_4;
 use crate::ch1_4::t_ch1_ch4;
 
-mod ch7_front_of_house;
+mod ch5_6;
+use crate::ch5_6::t_ch5_6;
+
+mod ch7_package_and_crate;
 // rust会找与此模块同名的文件中加载内容
-use crate::ch7_front_of_house::hosting;
+use crate::ch7_package_and_crate::hosting;
+
+mod ch8_container;
+use crate::ch8_container::t8_container;
 
 mod ch10_trait;
 use crate::ch10_trait::t10_trait;
@@ -101,19 +107,13 @@ fn t_cow_str() {
 
 fn main() {
     println!("Hello, world!");
-    value_in_cents(Coin::Quarter(UsState::Alaska));
-
-    let five = Some(5);
-    let six = plus_one(five);
-    let none = plus_one(None);
-
-    println!("{:?}", six);
-    println!("{:?}", none);
 
     //eat_at_restaurant_within_lib_rs(); // 当定义在lib.rs中使用
-    //hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
 
     //t_ch1_ch4();
+    //t_ch5_6();
+    t8_container();
     //t10_trait();
     //t10_lifetime();
     //t12_main();
@@ -131,37 +131,5 @@ fn main() {
     //t_tokio();
     //t_pin();
 
-    async_programming::async_prog::t_async_main();
-}
-
-#[derive(Debug)]
-enum UsState {
-    Alabama,
-    Alaska,
-}
-
-enum Coin {
-    Penny,
-    Nickel,
-    Dime,
-    Quarter(UsState),
-}
-
-fn value_in_cents(coin: Coin) -> u8 {
-    match coin {
-        Coin::Penny => 1,
-        Coin::Nickel => 5,
-        Coin::Dime => 10,
-        Coin::Quarter(state) => {
-            println!("State quarter from {:?}!", state);
-            25
-        }
-    }
-}
-
-fn plus_one(x: Option<i32>) -> Option<i32> {
-    match x {
-        None => None,
-        Some(i) => Some(i + 1),
-    }
+    //async_programming::async_prog::t_async_main();
 }
