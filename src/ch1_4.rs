@@ -99,6 +99,7 @@ fn ch4_ownership() {
     let slice2 = &string1[..2];
     let slice3 = &string1[6..];
     println!("slices: {}, {}, {}", slice1, slice2, slice3);
+    // 不能像c++那样传value给 引用，报：expected `&String`, found `String`
     let word = first_word(&string1); // here borrowed as immutable
     // string1.clear(); //  cannot borrow `string1` as mutable because it is also borrowed as immutable
     println!("first_word: {}", word);

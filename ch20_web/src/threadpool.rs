@@ -152,6 +152,8 @@ impl Drop for ThreadPool {
             /*
             Eng ver介绍了新的方法, 更推荐
             fn drop(&mut self) {
+                // remove from the Vec , and returns an iterator of those items.
+                //  Passing the .. range syntax will remove every value from the Vec
                 for worker in self.workers.drain(..) {
                     worker.thread.join().unwrap();
                 }

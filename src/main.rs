@@ -7,6 +7,10 @@ rust 是你的 package 名字（来自 Cargo.toml 的 name = "rust"）
 */
 use get_rusty::eat_at_restaurant_within_lib_rs; // 当放在lib.rs中使用
 
+/* P178
+the mod keyword declares modules, and Rust looks in a file with the same name
+as the module for the code that goes into that module
+*/
 mod ch1_4;
 use crate::ch1_4::t_ch1_ch4;
 
@@ -20,8 +24,8 @@ use crate::ch7_package_and_crate::hosting;
 mod ch8_container;
 use crate::ch8_container::t8_container;
 
-mod ch10_trait;
-use crate::ch10_trait::t10_trait;
+mod ch10_generics_trait;
+use crate::ch10_generics_trait::t10_trait;
 mod ch10_lifetime;
 use crate::ch10_lifetime::t10_lifetime;
 
@@ -113,8 +117,8 @@ fn main() {
 
     //t_ch1_ch4();
     //t_ch5_6();
-    t8_container();
-    //t10_trait();
+    //t8_container();
+    t10_trait();
     //t10_lifetime();
     //t12_main();
     //t13_closure();

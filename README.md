@@ -5,9 +5,9 @@ Let's get rusty ! In this repo there'll be different, practical projects written
 
 ## available run command
 
-`RUSTFLAGS=-Awarnings cargo run --target-dir /data2/rust-target/ -- https://www.rust-lang.org`
-
-- `RUSTFLAGS=-Awarnings cargo run` to suppress warnings
+- `RUSTFLAGS=-Awarnings cargo run`: to suppress warnings
+- `cargo run --target-dir /data2/rust-target/ -- https://www.rust-lang.org`: customize target directory
+- `IGNORE_CASE=1 cargo run --target-dir /data2/rust-target/ -- CHECK a.md`: designate ENV variables
 
 
 ## debugging

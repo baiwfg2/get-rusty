@@ -1,3 +1,5 @@
+ use std::collections::HashMap;
+
  #[derive(Debug)]
 enum SpreadsheetCell {
     Int(i32),
@@ -52,7 +54,32 @@ fn String_op() {
 }
 
 fn Hashmap_op() {
+    let mut scores = HashMap::new();
+    scores.insert(String::from("blue"), 10);
+    scores.insert(String::from("yellow"), 50);
+    scores.insert(String::from("yellow"), 60); // override previous value
 
+    let teams = vec![String::from("blue"), String::from("yellow")];
+    let initial_scores = vec![10, 50];
+    /* 要显式给类型，因为collect可以作用于许多不同的数据结构，如果不指明类型的话，Rust就无法知道我
+    们具体想要的类型。但是对于键值的类型参数，我们则使用了下画线占位，因为Rust能够根据动态数组中的数
+    据类型来推导出哈希映射所包含的类型 */
+    let scores2: HashMap<_, _> = teams.iter().zip(initial_scores.iter()).collect();
+    println!("scores2: {:?}", scores2);
+    let score = scores.get("blue");
+
+    scores.entry(String::from("yellow")).or_insert(70); // no effect
+    scores.entry(String::from("red")).or_insert(80);
+
+    let text = "hello yellow wonderful blue";
+    for word in text.split_whitespace() {
+        let count = scores.entry(word.to_string()).or_insert(0);
+        *count += 1; // cannot use `+=` on type `&mut {integer}`
+    }
+    // the way to iterate
+    for (k, v) in &scores {
+        println!("{}: {}", k, v);
+    }
 }
 
 pub fn t8_container() {

@@ -1,9 +1,12 @@
-/*
+/* ' 英文是: apostrophe
+
 If not annotated with lifetime tag, error will be: expected named lifetime parameter
 Because compiler's borrow checker cannot figure out which &str will be returned
 如果不标注，则编译器在执行默认的生命周期标注规则后，仍无法判定所有引用的生命周期时，就报错
 
 都用'a表示：两个切片的存活时间不短于'a ，返回值的存活时间也不短于'a
+函数本身并不需要知道x与y的具体存活时长，
+只要某些作用域可以被用来替换'a并满足约束就可以了
 */
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() {
@@ -18,11 +21,26 @@ fn longest_with_one_ref<'a>(x: &'a str, y: &str) -> &'a str {
     x
 }
 
+/// 尽管加了'a ，但返回值lifetime 不依赖输入，而依赖局部变量
+/// 修改方式可以是返回数据类型本身
+// fn longest_with_dangle<'a>(x: &str, y: &str) -> &'a str {
+//     let result = String::from("really long string");
+//     result.as_str() // error: `result` does not live long enough
+// }
+
 // Page330:这个标注意味着 ImportantExcerptWithLifetimeTag 实例的存活时间
 //   不能超过存储在part字段中的引用的存活时间 (P300)
 struct ImportantExcerptWithLifetimeTag<'a> {
     // annoatate `every ref` when there're refs in struct
     part: &'a str,
+}
+
+///////// 为何第4章的 first_word 不用标注，是因为编译器逐渐有了默认规则，省去频繁标注的麻烦 （lifetime elision rules Page 257)
+
+/// 这个方法是自己琢磨出来的，参照Split<'_, P>
+/// 当返回的类型中带有引用时，写成 '_' 既表示遵守默认elision 规则，又增加可读性，提醒调用者这个函数返回的类型中带有引用
+fn returnStructWithRef(x: &str) -> ImportantExcerptWithLifetimeTag<'_> {
+    ImportantExcerptWithLifetimeTag { part: x }
 }
 
 ////////// 方法定义中的生命周期标注 (P304)
